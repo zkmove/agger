@@ -1,0 +1,18 @@
+[workspace]
+members = ["crates/tds-node", "crates/aptos-events"]
+resolver = "2"
+[workspace.dependencies]
+anyhow = { version = "1" }
+tokio = { version = "1", features=["rt-multi-thread"] }
+async-stream = { version = "0.3" }
+futures-core = { version = "0.3" }
+serde = { version = "1"}
+serde_json = { version = "1" }
+
+[patch."https://github.com/young-rocks/zkmove-vm"]
+movelang={ path="../zkmove-vm/movelang"}
+zkmove-vm-circuit={ path="../zkmove-vm/vm-circuit", package="vm-circuit"}
+zkmove-vm={ path="../zkmove-vm/vm", package="vm"}
+
+[patch."https://github.com/aptos-labs/aptos-core"]
+aptos-sdk={path="../../aptos-labs/aptos-core/sdk"}

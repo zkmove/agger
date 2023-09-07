@@ -1,0 +1,14 @@
+[package]
+name = "aptos-events"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+futures-core = {workspace=true}
+async-stream = { workspace=true }
+tokio = {  workspace=true }
+serde_json =  {  workspace=true }
+serde= {  workspace=true }
+aptos-sdk = { git = "https://github.com/aptos-labs/aptos-core", tag = "aptos-node-v1.6.3" }

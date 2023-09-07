@@ -1,0 +1,17 @@
+[package]
+name = "tds-node"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = { workspace=true }
+tokio = {  workspace=true }
+aptos-events = {path = "../aptos-events"}
+
+##zkmove-vm={git="ssh://git@github.com/young-rocks/zkmove-vm.git", package="vm"}
+zkmove-vm-circuit={git="https://github.com/young-rocks/zkmove-vm", package="vm-circuit"}
+zkmove-vm={git="https://github.com/young-rocks/zkmove-vm", package="vm"}
+movelang={git="https://github.com/young-rocks/zkmove-vm", package="movelang"}
+halo2_proofs = { git = "https://github.com/privacy-scaling-explorations/halo2.git", tag = "v2023_02_02" }
