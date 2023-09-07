@@ -1,4 +1,7 @@
-use aptos_sdk::rest_client::aptos_api_types::{MoveStructTag, VersionedEvent};
+use aptos_sdk::move_types::identifier::{IdentStr, Identifier};
+use aptos_sdk::rest_client::aptos_api_types::{
+    EntryFunctionId, IdentifierWrapper, MoveModuleId, MoveStructTag, VersionedEvent, ViewRequest,
+};
 use aptos_sdk::rest_client::error::RestError;
 pub use aptos_sdk::rest_client::AptosBaseUrl;
 use aptos_sdk::rest_client::Client;
@@ -11,7 +14,7 @@ use std::time::Duration;
 use tokio::time::sleep;
 
 #[derive(Clone, Debug)]
-pub struct TdsQueryMananger {
+pub struct TdsQueryManager {
     client: Client,
     param: TdsQueryParam,
 }
@@ -19,17 +22,14 @@ pub struct TdsQueryMananger {
 #[derive(Clone, Debug)]
 pub struct TdsQueryParam {
     tds_address: AccountAddress,
-    event_handle: String,
-    field_name: String,
-    tds_qyery_module_name: String,
-    tds_queries_struct_name: String,
 }
+
 const TDS_QUERY_MODULE_NAME: &str = "query";
 const TDS_QUERY_QUERY_STRUCT_NAME: &str = "Query";
 const TDS_QUERY_QUERIES_STRUCT_NAME: &str = "Queries";
 const TDS_QUERY_EVENT_HANDLES_STRUCT_NAME: &str = "EventHandles";
 const TDS_QUERY_FIELD_NAME_NEW_EVENT_HANDLE: &str = "new_event_handle";
-
+const TDS_QUERY_FUNC_NAME_GET_MODULE: &str = "get_module";
 type AptosResult<T> = Result<T, RestError>;
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -39,12 +39,14 @@ struct NewQueryEvent {
 }
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Query {
-    module_address: AccountAddress,
-    module_name: Vec<u8>,
-    function_index: u16,
-    deadline: u64,
-    success: Option<bool>,
-    result: Option<Vec<u8>>,
+    pub module_address: AccountAddress,
+    pub module_name: Vec<u8>,
+    pub function_index: u16,
+    pub deadline: u64,
+    pub args: Vec<Vec<u8>>,
+    pub ty_args: Vec<Vec<u8>>,
+    pub success: Option<bool>,
+    pub result: Option<Vec<u8>>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -64,20 +66,50 @@ struct Table {
 
 #[derive(Clone, Debug)]
 pub struct UserQuery {
-    id: u64,
-    user: AccountAddress,
-    query: Query,
+    pub id: u64,
+    pub user: AccountAddress,
+    pub query: Query,
     /// version at the query is triggered
-    version: u64,
+    pub version: u64,
 }
-impl TdsQueryMananger {
+impl TdsQueryManager {
     pub fn new(aptos_url: AptosBaseUrl, param: TdsQueryParam) -> Self {
         Self {
             client: Client::builder(aptos_url).build(),
             param,
         }
     }
-    pub fn get_event_stream(self) -> impl Stream<Item = AptosResult<UserQuery>> {
+    pub async fn prepare_modules(&self, query: &UserQuery) -> AptosResult<Vec<Vec<u8>>> {
+        query.query.module_address;
+        let req = ViewRequest {
+            function: EntryFunctionId {
+                module: MoveModuleId {
+                    address: self.param.tds_address.into(),
+                    name: IdentifierWrapper(Identifier::new(TDS_QUERY_MODULE_NAME).unwrap()),
+                },
+                name: IdentifierWrapper(Identifier::new(TDS_QUERY_FUNC_NAME_GET_MODULE).unwrap()),
+            },
+            type_arguments: vec![],
+            arguments: vec![
+                serde_json::to_value(query.query.module_address).unwrap(),
+                serde_json::to_value(query.query.module_name.clone()).unwrap(),
+            ],
+        };
+        let response = self
+            .client
+            .view(&req, Some(query.version))
+            .await?
+            .into_inner()
+            .pop();
+        let module_bytes: Vec<_> = response
+            .map(|v| serde_json::from_value(v))
+            .transpose()?
+            .expect("view get_module should return one value");
+        // TODO: fetch deps if any
+        Ok(vec![module_bytes])
+    }
+
+    pub fn get_query_stream(self) -> impl Stream<Item = AptosResult<UserQuery>> {
         try_stream! {
             let mut cur = 0;
             loop {
