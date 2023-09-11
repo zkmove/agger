@@ -1,12 +1,11 @@
-use aptos_sdk::move_types::identifier::{IdentStr, Identifier};
+use aptos_sdk::move_types::identifier::Identifier;
 use aptos_sdk::rest_client::aptos_api_types::{
-    EntryFunctionId, IdentifierWrapper, MoveModuleId, MoveStructTag, VersionedEvent, ViewRequest,
+    EntryFunctionId, IdentifierWrapper, MoveModuleId, VersionedEvent, ViewRequest,
 };
 use aptos_sdk::rest_client::error::RestError;
 pub use aptos_sdk::rest_client::AptosBaseUrl;
 use aptos_sdk::rest_client::Client;
 use aptos_sdk::types::account_address::AccountAddress;
-use aptos_sdk::types::state_store::table::TableInfo;
 use async_stream::try_stream;
 use futures_core::Stream;
 use serde::{Deserialize, Serialize};
@@ -30,6 +29,7 @@ const TDS_QUERY_QUERIES_STRUCT_NAME: &str = "Queries";
 const TDS_QUERY_EVENT_HANDLES_STRUCT_NAME: &str = "EventHandles";
 const TDS_QUERY_FIELD_NAME_NEW_EVENT_HANDLE: &str = "new_event_handle";
 const TDS_QUERY_FUNC_NAME_GET_MODULE: &str = "get_module";
+const TDS_QUERY_FUNC_NAME_GET_VK: &str = "get_vk";
 type AptosResult<T> = Result<T, RestError>;
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -80,7 +80,6 @@ impl TdsQueryManager {
         }
     }
     pub async fn prepare_modules(&self, query: &UserQuery) -> AptosResult<Vec<Vec<u8>>> {
-        query.query.module_address;
         let req = ViewRequest {
             function: EntryFunctionId {
                 module: MoveModuleId {
@@ -107,6 +106,34 @@ impl TdsQueryManager {
             .expect("view get_module should return one value");
         // TODO: fetch deps if any
         Ok(vec![module_bytes])
+    }
+    pub async fn get_vk_for_query(&self, query: &UserQuery) -> AptosResult<Vec<u8>> {
+        let req = ViewRequest {
+            function: EntryFunctionId {
+                module: MoveModuleId {
+                    address: self.param.tds_address.into(),
+                    name: IdentifierWrapper(Identifier::new(TDS_QUERY_MODULE_NAME).unwrap()),
+                },
+                name: IdentifierWrapper(Identifier::new(TDS_QUERY_FUNC_NAME_GET_VK).unwrap()),
+            },
+            type_arguments: vec![],
+            arguments: vec![
+                serde_json::to_value(query.query.module_address).unwrap(),
+                serde_json::to_value(query.query.module_name.clone()).unwrap(),
+                serde_json::to_value(query.query.function_index).unwrap(),
+            ],
+        };
+        let response = self
+            .client
+            .view(&req, Some(query.version))
+            .await?
+            .into_inner()
+            .pop();
+        let vk_bytes: Vec<_> = response
+            .map(|v| serde_json::from_value(v))
+            .transpose()?
+            .expect("view get_vk should return one value");
+        Ok(vk_bytes)
     }
 
     pub fn get_query_stream(self) -> impl Stream<Item = AptosResult<UserQuery>> {

@@ -10,8 +10,8 @@ use zkmove_vm::state::StateStore;
 use zkmove_vm_circuit::witness::Witness;
 
 pub fn witness(
-    modules: Vec<Vec<u8>>,
     query: UserQuery,
+    modules: Vec<Vec<u8>>,
     circuit_config: CircuitConfig,
 ) -> anyhow::Result<Witness<Fp>> {
     let mut state = StateStore::new();
@@ -30,7 +30,7 @@ pub fn witness(
         .map(|t| {
             let s = String::from_utf8(t)?;
             let mut ts = parse_type_tags(s.as_str())?;
-            Ok(ts.pop().ok_or_else(|| anyhow!("parse type arg failure"))?)
+            ts.pop().ok_or_else(|| anyhow!("parse type arg failure"))
         })
         .collect::<anyhow::Result<Vec<_>>>()?;
     let args = query

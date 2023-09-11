@@ -6936,7 +6936,6 @@ version = "0.2.0"
 dependencies = [
  "error",
  "halo2_proofs",
- "hex",
  "logger",
  "move-binary-format 0.0.3 (git+https://github.com/young-rocks/move?rev=b036995a)",
  "move-core-types 0.0.4 (git+https://github.com/young-rocks/move?rev=b036995a)",
@@ -6944,9 +6943,6 @@ dependencies = [
  "move-vm-types 0.1.0 (git+https://github.com/young-rocks/move?rev=b036995a)",
  "movelang",
  "petgraph 0.6.4",
- "plotters",
- "rand 0.8.5",
- "smallvec",
  "tokio",
  "vm-circuit",
  "web3",
@@ -6966,6 +6962,8 @@ dependencies = [
  "move-core-types 0.0.4 (git+https://github.com/young-rocks/move?rev=b036995a)",
  "movelang",
  "petgraph 0.6.4",
+ "plotters",
+ "rand 0.8.5",
 ]
 
 [[package]]

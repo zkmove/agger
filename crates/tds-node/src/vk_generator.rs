@@ -1,14 +1,15 @@
 use halo2_proofs::halo2curves::pasta::{EqAffine, Fp};
 use halo2_proofs::poly::commitment::ParamsProver;
 use halo2_proofs::poly::ipa::commitment::ParamsIPA;
-use halo2_proofs::SerdeFormat;
+
 use movelang::argument::ScriptArguments;
-use movelang::move_binary_format::file_format::{empty_script, CompiledScript};
+use movelang::move_binary_format::file_format::{empty_script};
 use movelang::move_binary_format::CompiledModule;
 use movelang::value::TypeTag;
 use zkmove_vm::runtime::Runtime;
 use zkmove_vm::state::StateStore;
 use zkmove_vm_circuit::circuit::VmCircuit;
+use zkmove_vm_circuit::{find_best_k, setup_vm_circuit};
 
 #[derive(Copy, Clone, Debug, Default)]
 pub struct CircuitConfig {
@@ -86,9 +87,9 @@ pub fn gen_vks(
         state.add_module(m);
     }
 
-    let mut vks = Vec::new();
+    let vks = Vec::new();
     for EntryFunctionConfig {
-        entry_function,
+        entry_function: _,
         demo_run_config,
         circuit_config,
     } in entry_function_config
@@ -106,9 +107,9 @@ pub fn gen_vks(
             .unwrap();
 
         let vm_circuit = VmCircuit { witness };
-        let k = rt.find_best_k(&vm_circuit, vec![])?;
+        let k = find_best_k(&vm_circuit, vec![])?;
         let params: ParamsIPA<EqAffine> = ParamsIPA::new(k);
-        let (vk, _) = rt.setup_vm_circuit_ipa(&vm_circuit, &params)?;
+        let (_vk, _) = setup_vm_circuit(&vm_circuit, &params)?;
         // TODO: help wanted, https://github.com/young-rocks/zkmove-vm/issues/168
         // vks.push(vk.to_bytes(SerdeFormat::Processed));
     }
