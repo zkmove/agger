@@ -6,6 +6,7 @@ module tds::registry {
     use aptos_std::table;
     use aptos_framework::account;
     use aptos_framework::event;
+    use std::signer::address_of;
 
     struct ModuleId has copy, drop, store {
         addr: vector<u8>,
@@ -38,6 +39,7 @@ module tds::registry {
     }
 
     fun init_module(account: &signer) {
+        assert!(address_of(account) == @tds, 401);
         move_to(account, Modules { modules: table::new() });
         move_to(account, Registry {
             verify_keys: table::new(),
