@@ -2,12 +2,13 @@ module tds::registry {
     use std::string;
     use std::vector;
 
+    use aptos_std::from_bcs;
     use aptos_std::table;
     use aptos_framework::account;
     use aptos_framework::event;
 
     struct ModuleId has copy, drop, store {
-        addr: address,
+        addr: vector<u8>,
         name: string::String,
     }
 
@@ -20,6 +21,17 @@ module tds::registry {
         verify_keys: table::Table<ModuleId, table::Table<u16, vector<u8>>>,
         event_handle: event::EventHandle<ModuleRegisterEvent>
     }
+
+    // struct CircuitConfig has copy, drop {
+    //     max_step_row: u32,
+    //     stack_ops_num: u32,
+    //     locals_ops_num: u32,
+    //     global_ops_num: u32,
+    //     word_size: u32,
+    //     max_frame_index: u32,
+    //     max_locals_size: u32,
+    //     max_stack_size: u32,
+    // }
 
     struct ModuleRegisterEvent has drop, store {
         module_id: ModuleId
@@ -34,7 +46,7 @@ module tds::registry {
     }
 
     #[view]
-    public fun get_module(addr: address, name: vector<u8>): vector<u8>
+    public fun get_module(addr: vector<u8>, name: vector<u8>): vector<u8>
     acquires Modules {
         let id = ModuleId { addr, name: string::utf8(name) };
         let ms = borrow_global<Modules>(@tds);
@@ -42,7 +54,7 @@ module tds::registry {
     }
 
     #[view]
-    public fun get_vk(addr: address, name: vector<u8>, function_index: u16): vector<u8>
+    public fun get_vk(addr: vector<u8>, name: vector<u8>, function_index: u16): vector<u8>
     acquires Registry {
         let id = ModuleId { addr, name: string::utf8(name) };
         let registry = borrow_global<Registry>(@tds);
@@ -50,14 +62,19 @@ module tds::registry {
         *table::borrow(mkeys, function_index)
     }
 
-    /// verify_key is composed with vk+function_index
+    /// verify_key is composed with vk+function_index+circuit_configs
     /// TODO: add circuit configuration.
-    public entry fun register_module(addr: address, name: vector<u8>, code: vector<u8>, verify_keys: vector<vector<u8>>)
+    public entry fun register_module(
+        addr: vector<u8>,
+        name: vector<u8>,
+        code: vector<u8>,
+        func_verify_keys: vector<vector<u8>>
+    )
     acquires Modules, Registry {
         let module_id = ModuleId { addr, name: string::utf8(name) };
 
         add_module(module_id, code);
-        add_entry_function_verify_keys(module_id, verify_keys);
+        add_entry_function_verify_keys(module_id, func_verify_keys);
     }
 
 
@@ -76,10 +93,9 @@ module tds::registry {
             i = i - 1;
 
             let vk = vector::pop_back(&mut verify_keys);
-            // bigendian encoding of function index
-            let lo = vector::pop_back(&mut vk);
-            let hi = vector::pop_back(&mut vk);
-            let func_index = ((hi as u16) << 8) + (lo as u16);
+            // le encoding of function index
+            let new_len =vector::length(&vk) - 2;
+            let func_index = from_bcs::to_u16(vector::trim(&mut vk, new_len));
             add_entry_function_verify_key(&mut registry.verify_keys, module_id, func_index, vk);
         };
         event::emit_event(&mut registry.event_handle, ModuleRegisterEvent { module_id });

@@ -7,7 +7,7 @@ module tds::query {
     use aptos_framework::event;
 
     struct Query has store {
-        module_address: address,
+        module_address: vector<u8>,
         module_name: vector<u8>,
         function_index: u16,
         // arg encoded in str, see parse_transaction_arguments
@@ -50,7 +50,7 @@ module tds::query {
 
     public entry fun send_query(
         sender: signer,
-        module_address: address,
+        module_address: vector<u8>,
         module_name: vector<u8>,
         function_index: u16,
         args: vector<vector<u8>>,

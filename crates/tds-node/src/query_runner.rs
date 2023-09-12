@@ -1,13 +1,20 @@
-use crate::vk_generator::CircuitConfig;
 use anyhow::anyhow;
-use aptos_events::UserQuery;
 use halo2_proofs::halo2curves::pasta::Fp;
-use movelang::argument::{parse_transaction_argument, parse_type_tags, ScriptArguments};
-use movelang::move_binary_format::file_format::empty_script;
+use movelang::argument::{
+    parse_transaction_argument, parse_type_tags, Identifier, ScriptArguments,
+};
+use movelang::move_binary_format::access::ModuleAccess;
+use movelang::move_binary_format::file_format::{FunctionDefinitionIndex};
 use movelang::move_binary_format::CompiledModule;
+use movelang::move_core_types::resolver::ModuleResolver;
+use movelang::value::ModuleId;
 use zkmove_vm::runtime::Runtime;
 use zkmove_vm::state::StateStore;
 use zkmove_vm_circuit::witness::Witness;
+
+use aptos_events::UserQuery;
+
+use crate::vk_generator::CircuitConfig;
 
 pub fn witness(
     query: UserQuery,
@@ -43,20 +50,50 @@ pub fn witness(
             Ok(ta)
         })
         .collect::<anyhow::Result<Vec<_>>>()?;
-    let witness = rt
-        .execute_script(
-            empty_script(),
-            compiled_modules.clone(),
-            ty_args,
+    let entry_module_address =
+        movelang::move_core_types::account_address::AccountAddress::from_bytes(
+            &query.query.module_address,
+        )?;
+    let entry_module_name = Identifier::from_utf8(query.query.module_name.clone())?;
+    let entry_module_id = ModuleId::new(entry_module_address, entry_module_name);
+    let entry_module = CompiledModule::deserialize(
+        &state
+            .get_module(&entry_module_id)?
+            .ok_or(anyhow!("cannot find module {}", &entry_module_id))?,
+    )?;
+
+    let entry_function_name = entry_module.identifier_at(
+        entry_module
+            .function_handle_at(
+                entry_module
+                    .function_def_at(FunctionDefinitionIndex::new(query.query.function_index))
+                    .function,
+            )
+            .name,
+    );
+
+    let traces = rt
+        .execute_entry_function(
+            &entry_module_id,
+            entry_function_name,
+            ty_args.clone(),
             None,
             if args.is_empty() {
                 None
             } else {
-                Some(ScriptArguments::new(args))
+                Some(ScriptArguments::new(args.clone()))
             },
             &mut state,
-            circuit_config.into(),
         )
         .unwrap();
+
+    let witness = rt.process_execution_trace(
+        ty_args,
+        None,
+        Some((&entry_module_id, entry_function_name)),
+        compiled_modules.clone(),
+        traces,
+        circuit_config.into(),
+    )?;
     Ok(witness)
 }

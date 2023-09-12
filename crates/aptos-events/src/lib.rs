@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use aptos_sdk::move_types::identifier::Identifier;
 use aptos_sdk::rest_client::aptos_api_types::{
     EntryFunctionId, IdentifierWrapper, MoveModuleId, VersionedEvent, ViewRequest,
@@ -9,7 +11,6 @@ use aptos_sdk::types::account_address::AccountAddress;
 use async_stream::try_stream;
 use futures_core::Stream;
 use serde::{Deserialize, Serialize};
-use std::time::Duration;
 use tokio::time::sleep;
 
 #[derive(Clone, Debug)]
@@ -30,6 +31,7 @@ const TDS_QUERY_EVENT_HANDLES_STRUCT_NAME: &str = "EventHandles";
 const TDS_QUERY_FIELD_NAME_NEW_EVENT_HANDLE: &str = "new_event_handle";
 const TDS_QUERY_FUNC_NAME_GET_MODULE: &str = "get_module";
 const TDS_QUERY_FUNC_NAME_GET_VK: &str = "get_vk";
+
 type AptosResult<T> = Result<T, RestError>;
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -37,9 +39,10 @@ struct NewQueryEvent {
     user: AccountAddress,
     id: u64,
 }
+
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Query {
-    pub module_address: AccountAddress,
+    pub module_address: Vec<u8>,
     pub module_name: Vec<u8>,
     pub function_index: u16,
     pub deadline: u64,
@@ -54,11 +57,13 @@ struct Queries {
     query_counter: u64,
     queries: TableWithLength,
 }
+
 #[derive(Debug, Clone, Deserialize, Serialize)]
 struct TableWithLength {
     inner: Table,
     length: u64,
 }
+
 #[derive(Debug, Clone, Deserialize, Serialize)]
 struct Table {
     handle: AccountAddress,
@@ -72,6 +77,7 @@ pub struct UserQuery {
     /// version at the query is triggered
     pub version: u64,
 }
+
 impl TdsQueryManager {
     pub fn new(aptos_url: AptosBaseUrl, param: TdsQueryParam) -> Self {
         Self {
@@ -79,7 +85,12 @@ impl TdsQueryManager {
             param,
         }
     }
-    pub async fn prepare_modules(&self, query: &UserQuery) -> AptosResult<Vec<Vec<u8>>> {
+    pub async fn prepare_modules(
+        &self,
+        UserQuery {
+            query,  version, ..
+        }: &UserQuery,
+    ) -> AptosResult<Vec<Vec<u8>>> {
         let req = ViewRequest {
             function: EntryFunctionId {
                 module: MoveModuleId {
@@ -90,24 +101,29 @@ impl TdsQueryManager {
             },
             type_arguments: vec![],
             arguments: vec![
-                serde_json::to_value(query.query.module_address).unwrap(),
-                serde_json::to_value(query.query.module_name.clone()).unwrap(),
+                serde_json::to_value(query.module_address.clone()).unwrap(),
+                serde_json::to_value(query.module_name.clone()).unwrap(),
             ],
         };
         let response = self
             .client
-            .view(&req, Some(query.version))
+            .view(&req, Some(*version))
             .await?
             .into_inner()
             .pop();
         let module_bytes: Vec<_> = response
-            .map(|v| serde_json::from_value(v))
+            .map(serde_json::from_value)
             .transpose()?
             .expect("view get_module should return one value");
         // TODO: fetch deps if any
         Ok(vec![module_bytes])
     }
-    pub async fn get_vk_for_query(&self, query: &UserQuery) -> AptosResult<Vec<u8>> {
+    pub async fn get_vk_for_query(
+        &self,
+        UserQuery {
+            query,  version, ..
+        }: &UserQuery,
+    ) -> AptosResult<Vec<u8>> {
         let req = ViewRequest {
             function: EntryFunctionId {
                 module: MoveModuleId {
@@ -118,19 +134,19 @@ impl TdsQueryManager {
             },
             type_arguments: vec![],
             arguments: vec![
-                serde_json::to_value(query.query.module_address).unwrap(),
-                serde_json::to_value(query.query.module_name.clone()).unwrap(),
-                serde_json::to_value(query.query.function_index).unwrap(),
+                serde_json::to_value(query.module_address.clone()).unwrap(),
+                serde_json::to_value(query.module_name.clone()).unwrap(),
+                serde_json::to_value(query.function_index).unwrap(),
             ],
         };
         let response = self
             .client
-            .view(&req, Some(query.version))
+            .view(&req, Some(*version))
             .await?
             .into_inner()
             .pop();
         let vk_bytes: Vec<_> = response
-            .map(|v| serde_json::from_value(v))
+            .map(serde_json::from_value)
             .transpose()?
             .expect("view get_vk should return one value");
         Ok(vk_bytes)
@@ -144,7 +160,7 @@ impl TdsQueryManager {
                 if let Some(evt) = event {
                     let q = self.handle_new_query_event(evt).await?;
                     yield q;
-                    cur = cur + 1;
+                    cur += 1;
                 } else {
                     sleep(Duration::from_secs(30)).await;
                 }

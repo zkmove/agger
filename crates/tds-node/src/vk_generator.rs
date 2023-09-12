@@ -1,11 +1,12 @@
 use halo2_proofs::halo2curves::pasta::{EqAffine, Fp};
 use halo2_proofs::poly::commitment::ParamsProver;
 use halo2_proofs::poly::ipa::commitment::ParamsIPA;
+use movelang::argument::{IdentStr, Identifier, ScriptArguments};
 
-use movelang::argument::ScriptArguments;
-use movelang::move_binary_format::file_format::{empty_script};
 use movelang::move_binary_format::CompiledModule;
-use movelang::value::TypeTag;
+use movelang::move_core_types::account_address::AccountAddress;
+use movelang::value::{ModuleId, TypeTag};
+use std::str::FromStr;
 use zkmove_vm::runtime::Runtime;
 use zkmove_vm::state::StateStore;
 use zkmove_vm_circuit::circuit::VmCircuit;
@@ -54,6 +55,7 @@ impl From<CircuitConfig> for zkmove_vm_circuit::witness::CircuitConfig {
         config
     }
 }
+
 #[derive(Clone, Default, Debug)]
 pub struct DemoRunConfig {
     args: Option<ScriptArguments>,
@@ -62,7 +64,10 @@ pub struct DemoRunConfig {
 
 #[derive(Clone, Debug)]
 pub struct EntryFunctionConfig {
-    entry_function: String, // TODO: replace it with struct
+    entry_module_address: String,
+    entry_module_name: String,
+    entry_function: String,
+    // TODO: replace it with struct
     demo_run_config: DemoRunConfig,
     circuit_config: CircuitConfig,
 }
@@ -89,23 +94,37 @@ pub fn gen_vks(
 
     let vks = Vec::new();
     for EntryFunctionConfig {
-        entry_function: _,
+        entry_module_address,
+        entry_module_name,
+        entry_function,
         demo_run_config,
         circuit_config,
     } in entry_function_config
     {
-        let witness = rt
-            .execute_script(
-                empty_script(),
-                compiled_modules.clone(),
+        let entry_module = ModuleId::new(
+            AccountAddress::from_str(entry_module_address.as_str())?,
+            Identifier::new(entry_module_name.as_str()).unwrap(),
+        );
+        let entry_function_name = IdentStr::new(entry_function.as_str()).unwrap();
+        let traces = rt
+            .execute_entry_function(
+                &entry_module,
+                entry_function_name,
                 demo_run_config.ty_args.clone().unwrap_or_default(),
                 None,
                 demo_run_config.args.clone(),
                 &mut state,
-                circuit_config.into(),
             )
             .unwrap();
 
+        let witness = rt.process_execution_trace(
+            demo_run_config.ty_args.clone().unwrap_or_default(),
+            None,
+            Some((&entry_module, entry_function_name)),
+            compiled_modules.clone(),
+            traces,
+            circuit_config.into(),
+        )?;
         let vm_circuit = VmCircuit { witness };
         let k = find_best_k(&vm_circuit, vec![])?;
         let params: ParamsIPA<EqAffine> = ParamsIPA::new(k);
