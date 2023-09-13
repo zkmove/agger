@@ -96,8 +96,11 @@ module tds::registry {
 
             let vk = vector::pop_back(&mut verify_keys);
             // le encoding of function index
-            let new_len =vector::length(&vk) - 2;
-            let func_index = from_bcs::to_u16(vector::trim(&mut vk, new_len));
+            //let new_len =vector::length(&vk) - 2;
+            let func_index_bytes = vector::empty();
+            vector::push_back(&mut func_index_bytes,*vector::borrow(&vk, vector::length(&vk) - 2));
+            vector::push_back(&mut func_index_bytes,*vector::borrow(&vk, vector::length(&vk) - 1));
+            let func_index = from_bcs::to_u16(func_index_bytes);
             add_entry_function_verify_key(&mut registry.verify_keys, module_id, func_index, vk);
         };
         event::emit_event(&mut registry.event_handle, ModuleRegisterEvent { module_id });

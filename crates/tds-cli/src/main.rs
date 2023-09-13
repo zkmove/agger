@@ -56,7 +56,7 @@ fn main() -> anyhow::Result<()> {
                 }
             };
             let target_module_address = target_module.address.as_ref();
-            let target_module_name = target_module.name.as_bytes();
+            let target_module_name = target_module.name.to_string();
             let circuit_configs = parse_from_move_toml(&std::fs::read_to_string(
                 project_root.join(SourcePackageLayout::Manifest.path()),
             )?)?;
@@ -78,11 +78,8 @@ fn main() -> anyhow::Result<()> {
                     )),
                 },
                 ArgWithTypeJSON {
-                    arg_type: "hex".to_string(),
-                    value: serde_json::Value::String(format!(
-                        "0x{}",
-                        hex::encode(target_module_name)
-                    )),
+                    arg_type: "string".to_string(),
+                    value: serde_json::Value::String(target_module_name),
                 },
                 ArgWithTypeJSON {
                     arg_type: "hex".to_string(),
@@ -90,6 +87,14 @@ fn main() -> anyhow::Result<()> {
                         "0x{}",
                         hex::encode(target_module_bytes)
                     )),
+                },
+                ArgWithTypeJSON {
+                    arg_type: "hex".to_string(),
+                    value: serde_json::Value::Array(
+                        vks.into_iter()
+                            .map(|vk| serde_json::Value::String(format!("0x{}", hex::encode(&vk))))
+                            .collect(),
+                    ),
                 },
             ];
 
@@ -100,7 +105,16 @@ fn main() -> anyhow::Result<()> {
             };
 
             let output = serde_json::to_string_pretty(&json)?;
-            println!("{}", output)
+            println!("{}", output);
+            let aptos_deployment_dir = project_root.join("deployments").join("aptos");
+            std::fs::create_dir_all(aptos_deployment_dir.as_path())?;
+            std::fs::write(
+                aptos_deployment_dir
+                    .join(c.module)
+                    .with_extension("json")
+                    .as_path(),
+                output.as_str(),
+            )?;
         }
     }
     Ok(())
