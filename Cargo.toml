@@ -1,13 +1,18 @@
 [workspace]
-members = ["crates/tds-node", "crates/aptos-events"]
+members = ["crates/tds-node", "crates/aptos-events","crates/tds-cli"]
 resolver = "2"
 [workspace.dependencies]
+toml = { version = "0.7" }
 anyhow = { version = "1" }
 tokio = { version = "1", features=["rt-multi-thread"] }
 async-stream = { version = "0.3" }
 futures-core = { version = "0.3" }
 serde = { version = "1"}
 serde_json = { version = "1" }
+hex = { version = "0.4" }
+move-package = { git = "https://github.com/young-rocks/move", rev = "b036995a" }
+move-compiler = { git = "https://github.com/young-rocks/move", rev = "b036995a" }
+movelang={git="https://github.com/young-rocks/zkmove-vm", package="movelang"}
 
 [patch."https://github.com/young-rocks/zkmove-vm"]
 movelang={ path="../zkmove-vm/movelang"}

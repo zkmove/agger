@@ -58,23 +58,23 @@ impl From<CircuitConfig> for zkmove_vm_circuit::witness::CircuitConfig {
 
 #[derive(Clone, Default, Debug)]
 pub struct DemoRunConfig {
-    args: Option<ScriptArguments>,
-    ty_args: Option<Vec<TypeTag>>,
+    pub args: Option<ScriptArguments>,
+    pub ty_args: Option<Vec<TypeTag>>,
 }
 
 #[derive(Clone, Debug)]
 pub struct EntryFunctionConfig {
-    entry_module_address: String,
-    entry_module_name: String,
-    entry_function: String,
+    pub entry_module_address: String,
+    pub entry_module_name: String,
+    pub entry_function: String,
     // TODO: replace it with struct
-    demo_run_config: DemoRunConfig,
-    circuit_config: CircuitConfig,
+    pub demo_run_config: DemoRunConfig,
+    pub circuit_config: CircuitConfig,
 }
 
 pub struct PublishModulesConfig {
-    modules: Vec<Vec<u8>>,
-    entry_function_config: Vec<EntryFunctionConfig>,
+    pub modules: Vec<Vec<u8>>,
+    pub entry_function_config: Vec<EntryFunctionConfig>,
 }
 
 pub fn gen_vks(

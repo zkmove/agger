@@ -1,0 +1,19 @@
+[package]
+name = "tds-cli"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap = { version = "4", features=["derive"] }
+
+anyhow = {workspace=true}
+tds-node= {path="../tds-node"}
+serde = {workspace=true}
+serde_json = {workspace=true}
+hex = {workspace=true}
+toml = {workspace=true}
+move-package = { workspace=true }
+move-compiler = {workspace=true}
+movelang = {workspace=true}

@@ -1,0 +1,18 @@
+[package]
+name = "helloworld"
+version = "1.0.0"
+authors = []
+
+[addresses]
+hello = "_"
+[dev-addresses]
+hello = "0x1234"
+#[dependencies.AptosFramework]
+#git = "https://github.com/aptos-labs/aptos-core.git"
+#rev = "mainnet"
+#subdir = "aptos-move/framework/aptos-framework"
+
+[dev-dependencies]
+
+[circuits."hello::helloworld::say_hi"]
+args = ["1u8", "true", "0x1234"]

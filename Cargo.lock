@@ -400,9 +400,9 @@ dependencies = [
  "move-command-line-common 0.1.0",
  "move-compiler 0.0.1",
  "move-core-types 0.0.4",
- "move-docgen",
- "move-model",
- "move-package",
+ "move-docgen 0.1.0",
+ "move-model 0.1.0",
+ "move-package 0.1.0",
  "move-prover",
  "move-prover-boogie-backend",
  "move-stackless-bytecode",
@@ -446,7 +446,7 @@ dependencies = [
  "clap 4.4.2",
  "move-binary-format 0.0.3",
  "move-core-types 0.0.4",
- "move-model",
+ "move-model 0.1.0",
  "move-table-extension",
  "move-vm-types 0.1.0",
 ]
@@ -517,7 +517,7 @@ dependencies = [
  "move-command-line-common 0.1.0",
  "move-compiler 0.0.1",
  "move-core-types 0.0.4",
- "move-docgen",
+ "move-docgen 0.1.0",
  "move-errmapgen",
  "move-prover",
  "move-vm-runtime 0.1.0",
@@ -573,7 +573,7 @@ dependencies = [
  "aptos-framework",
  "itertools 0.10.5",
  "move-command-line-common 0.1.0",
- "move-package",
+ "move-package 0.1.0",
  "tempfile",
 ]
 
@@ -843,7 +843,7 @@ dependencies = [
  "fail 0.5.1",
  "futures",
  "move-binary-format 0.0.3",
- "move-bytecode-utils",
+ "move-bytecode-utils 0.1.0",
  "move-bytecode-verifier 0.1.0",
  "move-core-types 0.0.4",
  "move-table-extension",
@@ -1619,7 +1619,7 @@ dependencies = [
  "serde 1.0.188",
  "serde-hjson",
  "serde_json",
- "toml",
+ "toml 0.5.11",
  "yaml-rust",
 ]
 
@@ -3620,7 +3620,24 @@ dependencies = [
  "move-bytecode-verifier 0.1.0",
  "move-command-line-common 0.1.0",
  "move-core-types 0.0.4",
- "move-model",
+ "move-model 0.1.0",
+ "serde 1.0.188",
+]
+
+[[package]]
+name = "move-abigen"
+version = "0.1.0"
+source = "git+https://github.com/young-rocks/move?rev=b036995a#b036995a879174f54b0092a76b53eff55900bb57"
+dependencies = [
+ "anyhow",
+ "bcs 0.1.5",
+ "heck 0.3.3",
+ "log",
+ "move-binary-format 0.0.3 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "move-bytecode-verifier 0.1.0 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "move-command-line-common 0.1.0 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "move-model 0.1.0 (git+https://github.com/young-rocks/move?rev=b036995a)",
  "serde 1.0.188",
 ]
 
@@ -3695,6 +3712,18 @@ dependencies = [
  "anyhow",
  "move-binary-format 0.0.3",
  "move-core-types 0.0.4",
+ "petgraph 0.5.1",
+ "serde-reflection 0.3.6",
+]
+
+[[package]]
+name = "move-bytecode-utils"
+version = "0.1.0"
+source = "git+https://github.com/young-rocks/move?rev=b036995a#b036995a879174f54b0092a76b53eff55900bb57"
+dependencies = [
+ "anyhow",
+ "move-binary-format 0.0.3 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/move?rev=b036995a)",
  "petgraph 0.5.1",
  "serde-reflection 0.3.6",
 ]
@@ -3875,6 +3904,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "move-coverage"
+version = "0.1.0"
+source = "git+https://github.com/young-rocks/move?rev=b036995a#b036995a879174f54b0092a76b53eff55900bb57"
+dependencies = [
+ "anyhow",
+ "bcs 0.1.5",
+ "clap 3.2.25",
+ "codespan",
+ "colored",
+ "move-binary-format 0.0.3 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "move-bytecode-source-map 0.1.0 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "move-command-line-common 0.1.0 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "move-ir-types 0.1.0 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "once_cell",
+ "petgraph 0.5.1",
+ "serde 1.0.188",
+]
+
+[[package]]
 name = "move-disassembler"
 version = "0.1.0"
 dependencies = [
@@ -3887,8 +3936,26 @@ dependencies = [
  "move-command-line-common 0.1.0",
  "move-compiler 0.0.1",
  "move-core-types 0.0.4",
- "move-coverage",
+ "move-coverage 0.1.0",
  "move-ir-types 0.1.0",
+]
+
+[[package]]
+name = "move-disassembler"
+version = "0.1.0"
+source = "git+https://github.com/young-rocks/move?rev=b036995a#b036995a879174f54b0092a76b53eff55900bb57"
+dependencies = [
+ "anyhow",
+ "clap 3.2.25",
+ "colored",
+ "move-binary-format 0.0.3 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "move-bytecode-source-map 0.1.0 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "move-bytecode-verifier 0.1.0 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "move-command-line-common 0.1.0 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "move-compiler 0.0.1 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "move-coverage 0.1.0 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "move-ir-types 0.1.0 (git+https://github.com/young-rocks/move?rev=b036995a)",
 ]
 
 [[package]]
@@ -3902,7 +3969,25 @@ dependencies = [
  "log",
  "move-compiler 0.0.1",
  "move-core-types 0.0.4",
- "move-model",
+ "move-model 0.1.0",
+ "num",
+ "once_cell",
+ "regex",
+ "serde 1.0.188",
+]
+
+[[package]]
+name = "move-docgen"
+version = "0.1.0"
+source = "git+https://github.com/young-rocks/move?rev=b036995a#b036995a879174f54b0092a76b53eff55900bb57"
+dependencies = [
+ "anyhow",
+ "codespan",
+ "codespan-reporting",
+ "itertools 0.10.5",
+ "log",
+ "move-compiler 0.0.1 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "move-model 0.1.0 (git+https://github.com/young-rocks/move?rev=b036995a)",
  "num",
  "once_cell",
  "regex",
@@ -3918,7 +4003,7 @@ dependencies = [
  "log",
  "move-command-line-common 0.1.0",
  "move-core-types 0.0.4",
- "move-model",
+ "move-model 0.1.0",
  "serde 1.0.188",
 ]
 
@@ -4027,7 +4112,7 @@ dependencies = [
  "move-command-line-common 0.1.0",
  "move-compiler 0.0.1",
  "move-core-types 0.0.4",
- "move-disassembler",
+ "move-disassembler 0.1.0",
  "move-ir-types 0.1.0",
  "move-symbol-pool 0.1.0",
  "num",
@@ -4035,6 +4120,32 @@ dependencies = [
  "regex",
  "serde 1.0.188",
  "trace",
+]
+
+[[package]]
+name = "move-model"
+version = "0.1.0"
+source = "git+https://github.com/young-rocks/move?rev=b036995a#b036995a879174f54b0092a76b53eff55900bb57"
+dependencies = [
+ "anyhow",
+ "codespan",
+ "codespan-reporting",
+ "internment",
+ "itertools 0.10.5",
+ "log",
+ "move-binary-format 0.0.3 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "move-bytecode-source-map 0.1.0 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "move-bytecode-verifier 0.1.0 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "move-command-line-common 0.1.0 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "move-compiler 0.0.1 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "move-disassembler 0.1.0 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "move-ir-types 0.1.0 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "move-symbol-pool 0.1.0 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "num",
+ "once_cell",
+ "regex",
+ "serde 1.0.188",
 ]
 
 [[package]]
@@ -4047,15 +4158,15 @@ dependencies = [
  "colored",
  "dirs-next",
  "itertools 0.10.5",
- "move-abigen",
+ "move-abigen 0.1.0",
  "move-binary-format 0.0.3",
  "move-bytecode-source-map 0.1.0",
- "move-bytecode-utils",
+ "move-bytecode-utils 0.1.0",
  "move-command-line-common 0.1.0",
  "move-compiler 0.0.1",
  "move-core-types 0.0.4",
- "move-docgen",
- "move-model",
+ "move-docgen 0.1.0",
+ "move-model 0.1.0",
  "move-symbol-pool 0.1.0",
  "named-lock",
  "once_cell",
@@ -4067,7 +4178,43 @@ dependencies = [
  "serde_yaml 0.8.26",
  "sha2 0.9.9",
  "tempfile",
- "toml",
+ "toml 0.5.11",
+ "walkdir",
+ "whoami",
+]
+
+[[package]]
+name = "move-package"
+version = "0.1.0"
+source = "git+https://github.com/young-rocks/move?rev=b036995a#b036995a879174f54b0092a76b53eff55900bb57"
+dependencies = [
+ "anyhow",
+ "bcs 0.1.5",
+ "clap 3.2.25",
+ "colored",
+ "dirs-next",
+ "itertools 0.10.5",
+ "move-abigen 0.1.0 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "move-binary-format 0.0.3 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "move-bytecode-source-map 0.1.0 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "move-bytecode-utils 0.1.0 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "move-command-line-common 0.1.0 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "move-compiler 0.0.1 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "move-docgen 0.1.0 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "move-model 0.1.0 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "move-symbol-pool 0.1.0 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "named-lock",
+ "once_cell",
+ "petgraph 0.5.1",
+ "ptree",
+ "regex",
+ "reqwest",
+ "serde 1.0.188",
+ "serde_yaml 0.8.26",
+ "sha2 0.9.9",
+ "tempfile",
+ "toml 0.5.11",
  "walkdir",
  "whoami",
 ]
@@ -4086,15 +4233,15 @@ dependencies = [
  "hex",
  "itertools 0.10.5",
  "log",
- "move-abigen",
+ "move-abigen 0.1.0",
  "move-binary-format 0.0.3",
  "move-command-line-common 0.1.0",
  "move-compiler 0.0.1",
  "move-core-types 0.0.4",
- "move-docgen",
+ "move-docgen 0.1.0",
  "move-errmapgen",
  "move-ir-types 0.1.0",
- "move-model",
+ "move-model 0.1.0",
  "move-prover-boogie-backend",
  "move-stackless-bytecode",
  "num",
@@ -4105,7 +4252,7 @@ dependencies = [
  "serde_json",
  "simplelog",
  "tokio",
- "toml",
+ "toml 0.5.11",
 ]
 
 [[package]]
@@ -4123,7 +4270,7 @@ dependencies = [
  "move-command-line-common 0.1.0",
  "move-compiler 0.0.1",
  "move-core-types 0.0.4",
- "move-model",
+ "move-model 0.1.0",
  "move-stackless-bytecode",
  "num",
  "once_cell",
@@ -4144,7 +4291,7 @@ dependencies = [
  "bcs 0.1.4",
  "hex",
  "move-binary-format 0.0.3",
- "move-bytecode-utils",
+ "move-bytecode-utils 0.1.0",
  "move-core-types 0.0.4",
  "once_cell",
  "serde 1.0.188",
@@ -4167,7 +4314,7 @@ dependencies = [
  "move-compiler 0.0.1",
  "move-core-types 0.0.4",
  "move-ir-to-bytecode 0.1.0",
- "move-model",
+ "move-model 0.1.0",
  "num",
  "once_cell",
  "paste",
@@ -5929,6 +6076,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "serde_spanned"
+version = "0.6.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "96426c9936fd7a0124915f9185ea1d20aa9445cc9821142f0a73bc9207a2e186"
+dependencies = [
+ "serde 1.0.188",
+]
+
+[[package]]
 name = "serde_urlencoded"
 version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6271,6 +6427,22 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "55937e1799185b12863d447f42597ed69d9928686b8d88a1df17376a097d8369"
 
 [[package]]
+name = "tds-cli"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "clap 4.4.2",
+ "hex",
+ "move-compiler 0.0.1 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "move-package 0.1.0 (git+https://github.com/young-rocks/move?rev=b036995a)",
+ "movelang",
+ "serde 1.0.188",
+ "serde_json",
+ "tds-node",
+ "toml 0.7.8",
+]
+
+[[package]]
 name = "tds-node"
 version = "0.1.0"
 dependencies = [
@@ -6579,18 +6751,35 @@ dependencies = [
 ]
 
 [[package]]
+name = "toml"
+version = "0.7.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dd79e69d3b627db300ff956027cc6c3798cef26d22526befdfcd12feeb6d2257"
+dependencies = [
+ "serde 1.0.188",
+ "serde_spanned",
+ "toml_datetime",
+ "toml_edit",
+]
+
+[[package]]
 name = "toml_datetime"
 version = "0.6.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7cda73e2f1397b1262d6dfdcef8aafae14d1de7748d66822d3bfeeb6d03e5e4b"
+dependencies = [
+ "serde 1.0.188",
+]
 
 [[package]]
 name = "toml_edit"
-version = "0.19.14"
+version = "0.19.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f8123f27e969974a3dfba720fdb560be359f57b44302d280ba72e76a74480e8a"
+checksum = "1b5bb770da30e5cbfde35a2d7b9b8a2c4b8ef89548a7a6aeab5c9a576e3e7421"
 dependencies = [
  "indexmap 2.0.0",
+ "serde 1.0.188",
+ "serde_spanned",
  "toml_datetime",
  "winnow",
 ]
