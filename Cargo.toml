@@ -2,7 +2,8 @@
 members = ["crates/tds-node", "crates/aptos-events","crates/tds-cli"]
 resolver = "2"
 [workspace.dependencies]
-toml = { version = "0.7" }
+rand = { version = "0.8" }
+toml = { version = "0.8" }
 anyhow = { version = "1" }
 tokio = { version = "1", features=["rt-multi-thread"] }
 async-stream = { version = "0.3" }
@@ -12,7 +13,15 @@ serde_json = { version = "1" }
 hex = { version = "0.4" }
 move-package = { git = "https://github.com/young-rocks/move", rev = "b036995a" }
 move-compiler = { git = "https://github.com/young-rocks/move", rev = "b036995a" }
-movelang={git="https://github.com/young-rocks/zkmove-vm", package="movelang"}
+move-core-types = { git = "https://github.com/young-rocks/move", rev = "b036995a" }
+
+movelang={git="https://github.com/young-rocks/zkmove-vm", branch="main", package="movelang"}
+zkmove-vm-circuit={git="https://github.com/young-rocks/zkmove-vm",branch="main", package="vm-circuit"}
+zkmove-vm={git="https://github.com/young-rocks/zkmove-vm", branch="main", package="vm"}
+
+halo2_proofs = { git = "https://github.com/privacy-scaling-explorations/halo2.git", tag = "v2023_02_02" }
+
+aptos-sdk = { git = "https://github.com/aptos-labs/aptos-core", tag = "aptos-node-v1.6.3" }
 
 [patch."https://github.com/young-rocks/zkmove-vm"]
 movelang={ path="../zkmove-vm/movelang"}

@@ -8,10 +8,10 @@ edition = "2021"
 [dependencies]
 anyhow = { workspace=true }
 tokio = {  workspace=true }
+move-core-types = {workspace=true}
+movelang={workspace=true}
+zkmove-vm-circuit={workspace=true}
+zkmove-vm={workspace=true}
+halo2_proofs = {workspace=true}
+rand = { workspace=true }
 aptos-events = {path = "../aptos-events"}
-
-##zkmove-vm={git="ssh://git@github.com/young-rocks/zkmove-vm.git", package="vm"}
-zkmove-vm-circuit={git="https://github.com/young-rocks/zkmove-vm", package="vm-circuit"}
-zkmove-vm={git="https://github.com/young-rocks/zkmove-vm", package="vm"}
-movelang={git="https://github.com/young-rocks/zkmove-vm", package="movelang"}
-halo2_proofs = { git = "https://github.com/privacy-scaling-explorations/halo2.git", tag = "v2023_02_02" }

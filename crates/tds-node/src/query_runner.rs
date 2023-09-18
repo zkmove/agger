@@ -1,12 +1,12 @@
 use anyhow::anyhow;
 use halo2_proofs::halo2curves::pasta::Fp;
+use move_core_types::resolver::ModuleResolver;
 use movelang::argument::{
     parse_transaction_argument, parse_type_tags, Identifier, ScriptArguments,
 };
 use movelang::move_binary_format::access::ModuleAccess;
-use movelang::move_binary_format::file_format::{FunctionDefinitionIndex};
+use movelang::move_binary_format::file_format::FunctionDefinitionIndex;
 use movelang::move_binary_format::CompiledModule;
-use movelang::move_core_types::resolver::ModuleResolver;
 use movelang::value::ModuleId;
 use zkmove_vm::runtime::Runtime;
 use zkmove_vm::state::StateStore;
@@ -51,9 +51,7 @@ pub fn witness(
         })
         .collect::<anyhow::Result<Vec<_>>>()?;
     let entry_module_address =
-        movelang::move_core_types::account_address::AccountAddress::from_bytes(
-            &query.query.module_address,
-        )?;
+        move_core_types::account_address::AccountAddress::from_bytes(&query.query.module_address)?;
     let entry_module_name = Identifier::from_utf8(query.query.module_name.clone())?;
     let entry_module_id = ModuleId::new(entry_module_address, entry_module_name);
     let entry_module = CompiledModule::deserialize(

@@ -1,9 +1,9 @@
 use anyhow::Context;
 use move_package::resolution::resolution_graph::ResolvedTable;
 use movelang::argument::{
-    parse_transaction_argument, parse_type_tags, ScriptArgument, ScriptArguments,
+    parse_transaction_argument, parse_type_tags, ScriptArguments,
 };
-use movelang::value::TypeTag;
+
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use tds_node::vk_generator::{CircuitConfig, DemoRunConfig, EntryFunctionConfig};
@@ -32,7 +32,7 @@ pub fn parse_from_move_toml(data: &str) -> anyhow::Result<BTreeMap<String, Circu
     if let Some(tval) = tval {
         Ok(tval.try_into()?)
     } else {
-        return Ok(Default::default());
+        Ok(Default::default())
     }
 }
 

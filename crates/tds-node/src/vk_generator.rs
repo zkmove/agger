@@ -1,11 +1,15 @@
-use halo2_proofs::halo2curves::pasta::{EqAffine, Fp};
-use halo2_proofs::poly::commitment::ParamsProver;
-use halo2_proofs::poly::ipa::commitment::ParamsIPA;
+use anyhow::anyhow;
+use halo2_proofs::halo2curves::bn256::{Bn256, Fr};
+use halo2_proofs::poly::kzg::commitment::ParamsKZG;
+use halo2_proofs::SerdeFormat;
+use move_core_types::account_address::AccountAddress;
+use move_core_types::resolver::ModuleResolver;
 use movelang::argument::{IdentStr, Identifier, ScriptArguments};
-
+use movelang::move_binary_format::access::ModuleAccess;
 use movelang::move_binary_format::CompiledModule;
-use movelang::move_core_types::account_address::AccountAddress;
 use movelang::value::{ModuleId, TypeTag};
+use rand::prelude::StdRng;
+use rand::SeedableRng;
 use std::str::FromStr;
 use zkmove_vm::runtime::Runtime;
 use zkmove_vm::state::StateStore;
@@ -83,7 +87,7 @@ pub fn gen_vks(
         entry_function_config,
     }: PublishModulesConfig,
 ) -> anyhow::Result<Vec<Vec<u8>>> {
-    let rt = Runtime::<Fp>::new();
+    let rt = Runtime::<Fr>::new();
     let mut state = StateStore::new();
     let mut compiled_modules = Vec::default();
     for m in &modules {
@@ -92,7 +96,7 @@ pub fn gen_vks(
         state.add_module(m);
     }
 
-    let vks = Vec::new();
+    let mut vks = Vec::new();
     for EntryFunctionConfig {
         entry_module_address,
         entry_module_name,
@@ -105,6 +109,13 @@ pub fn gen_vks(
             AccountAddress::from_str(entry_module_address.as_str())?,
             Identifier::new(entry_module_name.as_str()).unwrap(),
         );
+
+        let compiled_module = CompiledModule::deserialize(
+            &state
+                .get_module(&entry_module)?
+                .ok_or(anyhow!("expect module {} exists", &entry_module))?,
+        )?;
+
         let entry_function_name = IdentStr::new(entry_function.as_str()).unwrap();
         let traces = rt
             .execute_entry_function(
@@ -127,10 +138,35 @@ pub fn gen_vks(
         )?;
         let vm_circuit = VmCircuit { witness };
         let k = find_best_k(&vm_circuit, vec![])?;
-        let params: ParamsIPA<EqAffine> = ParamsIPA::new(k);
-        let (_vk, _) = setup_vm_circuit(&vm_circuit, &params)?;
+        //let params: ParamsIPA<EqAffine> = ParamsIPA::new(k);
+        let params = ParamsKZG::<Bn256>::setup(k, StdRng::from_entropy());
+        let (vk, _) = setup_vm_circuit(&vm_circuit, &params)?;
         // TODO: help wanted, https://github.com/young-rocks/zkmove-vm/issues/168
-        // vks.push(vk.to_bytes(SerdeFormat::Processed));
+        let mut vk = vk.to_bytes(SerdeFormat::Processed);
+
+        let entry_function_index = compiled_module
+            .function_defs()
+            .iter()
+            .enumerate()
+            .find(|(_, fd)| {
+                compiled_module.identifier_at(compiled_module.function_handle_at(fd.function).name)
+                    == entry_function_name
+            })
+            .map(|(fdi, _)| fdi)
+            .ok_or(anyhow!(
+                "expect find index of function {}",
+                entry_function_name
+            ))? as u16;
+        extend_vk_with_func_info(&mut vk, circuit_config, entry_function_index);
+        vks.push(vk);
     }
     Ok(vks)
+}
+
+fn extend_vk_with_func_info(
+    vk: &mut Vec<u8>,
+    _circuit_config: CircuitConfig,
+    entry_function_index: u16,
+) {
+    vk.append(&mut entry_function_index.to_le_bytes().to_vec());
 }
