@@ -1,3 +1,5 @@
+use agger_cli::circuit_config::{parse_entry_function_config, parse_from_move_toml};
+use agger_node::vk_generator::{gen_vks, PublishModulesConfig};
 use clap::{Parser, Subcommand};
 use move_compiler::compiled_unit::CompiledUnit;
 use move_package::compilation::compiled_package::OnDiskCompiledPackage;
@@ -6,8 +8,6 @@ use move_package::source_package::layout::SourcePackageLayout;
 use move_package::source_package::manifest_parser::parse_move_manifest_from_file;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
-use tds_cli::circuit_config::{parse_entry_function_config, parse_from_move_toml};
-use tds_node::vk_generator::{gen_vks, PublishModulesConfig};
 
 #[derive(Parser)]
 struct Cli {
@@ -26,8 +26,8 @@ enum Commands {
 struct BuildAptosDeployment {
     #[arg(short, long = "module")]
     module: String,
-    #[arg(long = "tds")]
-    tds_address: String,
+    #[arg(long = "agger")]
+    agger_address: String,
 }
 
 fn main() -> anyhow::Result<()> {
@@ -123,7 +123,7 @@ fn main() -> anyhow::Result<()> {
             ];
 
             let json = EntryFunctionArgumentsJSON {
-                function_id: format!("{}::registry::register_module", c.tds_address.as_str()),
+                function_id: format!("{}::registry::register_module", c.agger_address.as_str()),
                 type_args: vec![],
                 args,
             };

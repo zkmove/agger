@@ -1,4 +1,4 @@
-module tds::query {
+module agger::query {
     use std::option::{Self, Option};
     use std::signer::address_of;
 
@@ -41,7 +41,7 @@ module tds::query {
 
 
     fun init_module(sender: &signer) {
-        assert!(address_of(sender) == @tds, 401);
+        assert!(address_of(sender) == @agger, 401);
         move_to(sender, EventHandles {
             new_event_handle: account::new_event_handle(sender),
             reply_event_handle: account::new_event_handle(sender),
@@ -70,7 +70,7 @@ module tds::query {
             success: option::none(),
             result: option::none()
         });
-        let event_handles = borrow_global_mut<EventHandles>(@tds);
+        let event_handles = borrow_global_mut<EventHandles>(@agger);
         event::emit_event(&mut event_handles.new_event_handle, NewQueryEvent { user: sender_address, id });
     }
 
@@ -101,7 +101,7 @@ module tds::query {
 
         write_query_result(q, success, result);
 
-        let event_handles = borrow_global_mut<EventHandles>(@tds);
+        let event_handles = borrow_global_mut<EventHandles>(@agger);
         event::emit_event(&mut event_handles.reply_event_handle, ReplyQueryEvent { user, id: query_id });
     }
 

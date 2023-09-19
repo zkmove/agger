@@ -1,4 +1,4 @@
-module tds::registry {
+module agger::registry {
     use std::string;
     use std::vector;
     use aptos_std::table;
@@ -36,7 +36,7 @@ module tds::registry {
     }
 
     fun init_module(account: &signer) {
-        assert!(address_of(account) == @tds, 401);
+        assert!(address_of(account) == @agger, 401);
         move_to(account, Modules { modules: table::new() });
         move_to(account, Registry {
             verify_keys: table::new(),
@@ -48,7 +48,7 @@ module tds::registry {
     public fun get_module(addr: vector<u8>, name: vector<u8>): vector<u8>
     acquires Modules {
         let id = ModuleId { addr, name: string::utf8(name) };
-        let ms = borrow_global<Modules>(@tds);
+        let ms = borrow_global<Modules>(@agger);
         *table::borrow(&ms.modules, id)
     }
 
@@ -56,7 +56,7 @@ module tds::registry {
     public fun get_vk(addr: vector<u8>, name: vector<u8>, function_index: u16): vector<u8>
     acquires Registry {
         let id = ModuleId { addr, name: string::utf8(name) };
-        let registry = borrow_global<Registry>(@tds);
+        let registry = borrow_global<Registry>(@agger);
         let mkeys = table::borrow(&registry.verify_keys, id);
         table::borrow(mkeys, function_index).vk
     }
@@ -65,7 +65,7 @@ module tds::registry {
     public fun get_param(addr: vector<u8>, name: vector<u8>, function_index: u16): vector<u8>
     acquires Registry {
         let id = ModuleId { addr, name: string::utf8(name) };
-        let registry = borrow_global<Registry>(@tds);
+        let registry = borrow_global<Registry>(@agger);
         let mkeys = table::borrow(&registry.verify_keys, id);
         table::borrow(mkeys, function_index).param
     }
@@ -74,7 +74,7 @@ module tds::registry {
     public fun get_config(addr: vector<u8>, name: vector<u8>, function_index: u16): vector<u8>
     acquires Registry {
         let id = ModuleId { addr, name: string::utf8(name) };
-        let registry = borrow_global<Registry>(@tds);
+        let registry = borrow_global<Registry>(@agger);
         let mkeys = table::borrow(&registry.verify_keys, id);
         table::borrow(mkeys, function_index).config
     }
@@ -100,7 +100,7 @@ module tds::registry {
     // todo: parse module id from bytecode ?
     public fun add_module(module_id: ModuleId, code: vector<u8>)
     acquires Modules {
-        let modules = borrow_global_mut<Modules>(@tds);
+        let modules = borrow_global_mut<Modules>(@agger);
         table::add(&mut modules.modules, module_id, code);
     }
 
@@ -111,7 +111,7 @@ module tds::registry {
         params: vector<vector<u8>>
     )
     acquires Registry {
-        let registry = borrow_global_mut<Registry>(@tds);
+        let registry = borrow_global_mut<Registry>(@agger);
         let i = vector::length(&verify_keys);
         while (i > 0) {
             i = i - 1;

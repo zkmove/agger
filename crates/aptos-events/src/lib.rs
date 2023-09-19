@@ -14,25 +14,25 @@ use serde::{Deserialize, Serialize};
 use tokio::time::sleep;
 
 #[derive(Clone, Debug)]
-pub struct TdsQueryManager {
+pub struct AggerQueryManager {
     client: Client,
-    param: TdsQueryParam,
+    param: AggerQueryParam,
 }
 
 #[derive(Clone, Debug)]
-pub struct TdsQueryParam {
-    tds_address: AccountAddress,
+pub struct AggerQueryParam {
+    aggger_address: AccountAddress,
 }
 
-const TDS_QUERY_MODULE_NAME: &str = "query";
-const TDS_QUERY_QUERY_STRUCT_NAME: &str = "Query";
-const TDS_QUERY_QUERIES_STRUCT_NAME: &str = "Queries";
-const TDS_QUERY_EVENT_HANDLES_STRUCT_NAME: &str = "EventHandles";
-const TDS_QUERY_FIELD_NAME_NEW_EVENT_HANDLE: &str = "new_event_handle";
-const TDS_QUERY_FUNC_NAME_GET_MODULE: &str = "get_module";
-const TDS_QUERY_FUNC_NAME_GET_VK: &str = "get_vk";
-const TDS_QUERY_FUNC_NAME_GET_PARAM: &str = "get_param";
-const TDS_QUERY_FUNC_NAME_GET_CONFIG: &str = "get_config";
+const AGGER_QUERY_MODULE_NAME: &str = "query";
+const AGGER_QUERY_QUERY_STRUCT_NAME: &str = "Query";
+const AGGER_QUERY_QUERIES_STRUCT_NAME: &str = "Queries";
+const AGGER_QUERY_EVENT_HANDLES_STRUCT_NAME: &str = "EventHandles";
+const AGGER_QUERY_FIELD_NAME_NEW_EVENT_HANDLE: &str = "new_event_handle";
+const AGGER_QUERY_FUNC_NAME_GET_MODULE: &str = "get_module";
+const AGGER_QUERY_FUNC_NAME_GET_VK: &str = "get_vk";
+const AGGER_QUERY_FUNC_NAME_GET_PARAM: &str = "get_param";
+const AGGER_QUERY_FUNC_NAME_GET_CONFIG: &str = "get_config";
 
 type AptosResult<T> = Result<T, RestError>;
 
@@ -80,8 +80,8 @@ pub struct UserQuery {
     pub version: u64,
 }
 
-impl TdsQueryManager {
-    pub fn new(aptos_url: AptosBaseUrl, param: TdsQueryParam) -> Self {
+impl AggerQueryManager {
+    pub fn new(aptos_url: AptosBaseUrl, param: AggerQueryParam) -> Self {
         Self {
             client: Client::builder(aptos_url).build(),
             param,
@@ -94,10 +94,10 @@ impl TdsQueryManager {
         let req = ViewRequest {
             function: EntryFunctionId {
                 module: MoveModuleId {
-                    address: self.param.tds_address.into(),
-                    name: IdentifierWrapper(Identifier::new(TDS_QUERY_MODULE_NAME).unwrap()),
+                    address: self.param.aggger_address.into(),
+                    name: IdentifierWrapper(Identifier::new(AGGER_QUERY_MODULE_NAME).unwrap()),
                 },
-                name: IdentifierWrapper(Identifier::new(TDS_QUERY_FUNC_NAME_GET_MODULE).unwrap()),
+                name: IdentifierWrapper(Identifier::new(AGGER_QUERY_FUNC_NAME_GET_MODULE).unwrap()),
             },
             type_arguments: vec![],
             arguments: vec![
@@ -126,11 +126,11 @@ impl TdsQueryManager {
             ViewRequest {
                 function: EntryFunctionId {
                     module: MoveModuleId {
-                        address: self.param.tds_address.into(),
-                        name: IdentifierWrapper(Identifier::new(TDS_QUERY_MODULE_NAME).unwrap()),
+                        address: self.param.aggger_address.into(),
+                        name: IdentifierWrapper(Identifier::new(AGGER_QUERY_MODULE_NAME).unwrap()),
                     },
                     name: IdentifierWrapper(
-                        Identifier::new(TDS_QUERY_FUNC_NAME_GET_CONFIG).unwrap(),
+                        Identifier::new(AGGER_QUERY_FUNC_NAME_GET_CONFIG).unwrap(),
                     ),
                 },
                 type_arguments: vec![],
@@ -143,10 +143,10 @@ impl TdsQueryManager {
             ViewRequest {
                 function: EntryFunctionId {
                     module: MoveModuleId {
-                        address: self.param.tds_address.into(),
-                        name: IdentifierWrapper(Identifier::new(TDS_QUERY_MODULE_NAME).unwrap()),
+                        address: self.param.aggger_address.into(),
+                        name: IdentifierWrapper(Identifier::new(AGGER_QUERY_MODULE_NAME).unwrap()),
                     },
-                    name: IdentifierWrapper(Identifier::new(TDS_QUERY_FUNC_NAME_GET_VK).unwrap()),
+                    name: IdentifierWrapper(Identifier::new(AGGER_QUERY_FUNC_NAME_GET_VK).unwrap()),
                 },
                 type_arguments: vec![],
                 arguments: vec![
@@ -158,11 +158,11 @@ impl TdsQueryManager {
             ViewRequest {
                 function: EntryFunctionId {
                     module: MoveModuleId {
-                        address: self.param.tds_address.into(),
-                        name: IdentifierWrapper(Identifier::new(TDS_QUERY_MODULE_NAME).unwrap()),
+                        address: self.param.aggger_address.into(),
+                        name: IdentifierWrapper(Identifier::new(AGGER_QUERY_MODULE_NAME).unwrap()),
                     },
                     name: IdentifierWrapper(
-                        Identifier::new(TDS_QUERY_FUNC_NAME_GET_PARAM).unwrap(),
+                        Identifier::new(AGGER_QUERY_FUNC_NAME_GET_PARAM).unwrap(),
                     ),
                 },
                 type_arguments: vec![],
@@ -229,7 +229,9 @@ impl TdsQueryManager {
                 new_query_event.user,
                 format!(
                     "{}/{}/{}",
-                    self.param.tds_address, TDS_QUERY_MODULE_NAME, TDS_QUERY_QUERIES_STRUCT_NAME
+                    self.param.aggger_address,
+                    AGGER_QUERY_MODULE_NAME,
+                    AGGER_QUERY_QUERIES_STRUCT_NAME
                 )
                 .as_str(),
                 version,
@@ -244,7 +246,9 @@ impl TdsQueryManager {
                 "u64",
                 format!(
                     "{}/{}/{}",
-                    self.param.tds_address, TDS_QUERY_MODULE_NAME, TDS_QUERY_QUERY_STRUCT_NAME
+                    self.param.aggger_address,
+                    AGGER_QUERY_MODULE_NAME,
+                    AGGER_QUERY_QUERY_STRUCT_NAME
                 )
                 .as_str(),
                 new_query_event.id,
@@ -262,15 +266,15 @@ impl TdsQueryManager {
         let response = self
             .client
             .get_account_events(
-                self.param.tds_address,
+                self.param.aggger_address,
                 format!(
                     "{}/{}/{}",
-                    self.param.tds_address,
-                    TDS_QUERY_MODULE_NAME,
-                    TDS_QUERY_EVENT_HANDLES_STRUCT_NAME
+                    self.param.aggger_address,
+                    AGGER_QUERY_MODULE_NAME,
+                    AGGER_QUERY_EVENT_HANDLES_STRUCT_NAME
                 )
                 .as_str(),
-                TDS_QUERY_FIELD_NAME_NEW_EVENT_HANDLE,
+                AGGER_QUERY_FIELD_NAME_NEW_EVENT_HANDLE,
                 Some(at),
                 Some(1),
             )
