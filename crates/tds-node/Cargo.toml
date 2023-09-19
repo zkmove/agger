@@ -6,12 +6,13 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-anyhow = { workspace=true }
-tokio = {  workspace=true }
-move-core-types = {workspace=true}
-movelang={workspace=true}
-zkmove-vm-circuit={workspace=true}
-zkmove-vm={workspace=true}
-halo2_proofs = {workspace=true}
-rand = { workspace=true }
-aptos-events = {path = "../aptos-events"}
+bcs = { workspace = true }
+anyhow = { workspace = true }
+tokio = { workspace = true }
+move-core-types = { workspace = true }
+movelang = { workspace = true }
+zkmove-vm-circuit = { workspace = true }
+zkmove-vm = { workspace = true }
+halo2_proofs = { workspace = true }
+rand = { workspace = true }
+aptos-events = { path = "../aptos-events" }

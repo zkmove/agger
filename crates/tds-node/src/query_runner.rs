@@ -1,5 +1,8 @@
 use anyhow::anyhow;
-use halo2_proofs::halo2curves::pasta::Fp;
+use halo2_proofs::halo2curves::bn256::Fr;
+
+use crate::vk_generator::VerificationParameters;
+use aptos_events::UserQuery;
 use move_core_types::resolver::ModuleResolver;
 use movelang::argument::{
     parse_transaction_argument, parse_type_tags, Identifier, ScriptArguments,
@@ -12,15 +15,11 @@ use zkmove_vm::runtime::Runtime;
 use zkmove_vm::state::StateStore;
 use zkmove_vm_circuit::witness::Witness;
 
-use aptos_events::UserQuery;
-
-use crate::vk_generator::CircuitConfig;
-
 pub fn witness(
     query: UserQuery,
     modules: Vec<Vec<u8>>,
-    circuit_config: CircuitConfig,
-) -> anyhow::Result<Witness<Fp>> {
+    vp: &VerificationParameters,
+) -> anyhow::Result<Witness<Fr>> {
     let mut state = StateStore::new();
     let mut compiled_modules = Vec::default();
     for m in &modules {
@@ -29,7 +28,7 @@ pub fn witness(
         state.add_module(m);
         // todo: replace it with execute entry_function
     }
-    let rt = Runtime::<Fp>::new();
+    let rt = Runtime::<Fr>::new();
     let ty_args = query
         .query
         .ty_args
@@ -91,7 +90,7 @@ pub fn witness(
         Some((&entry_module_id, entry_function_name)),
         compiled_modules.clone(),
         traces,
-        circuit_config.into(),
+        bcs::from_bytes(&vp.config)?,
     )?;
     Ok(witness)
 }

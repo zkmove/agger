@@ -16,21 +16,20 @@ module tds::registry {
 
     }
 
-    struct Registry has key {
-        verify_keys: table::Table<ModuleId, table::Table<u16, vector<u8>>>,
-        event_handle: event::EventHandle<ModuleRegisterEvent>
+    struct VerificationParameters has copy, drop, store {
+        /// circuit config in bcs
+        config: vector<u8>,
+        /// kzg param
+        param: vector<u8>,
+        /// verify key
+        vk: vector<u8>,
+
     }
 
-    // struct CircuitConfig has copy, drop {
-    //     max_step_row: u32,
-    //     stack_ops_num: u32,
-    //     locals_ops_num: u32,
-    //     global_ops_num: u32,
-    //     word_size: u32,
-    //     max_frame_index: u32,
-    //     max_locals_size: u32,
-    //     max_stack_size: u32,
-    // }
+    struct Registry has key {
+        verify_keys: table::Table<ModuleId, table::Table<u16, VerificationParameters>>,
+        event_handle: event::EventHandle<ModuleRegisterEvent>
+    }
 
     struct ModuleRegisterEvent has drop, store {
         module_id: ModuleId
@@ -59,7 +58,25 @@ module tds::registry {
         let id = ModuleId { addr, name: string::utf8(name) };
         let registry = borrow_global<Registry>(@tds);
         let mkeys = table::borrow(&registry.verify_keys, id);
-        *table::borrow(mkeys, function_index)
+        table::borrow(mkeys, function_index).vk
+    }
+
+    #[view]
+    public fun get_param(addr: vector<u8>, name: vector<u8>, function_index: u16): vector<u8>
+    acquires Registry {
+        let id = ModuleId { addr, name: string::utf8(name) };
+        let registry = borrow_global<Registry>(@tds);
+        let mkeys = table::borrow(&registry.verify_keys, id);
+        table::borrow(mkeys, function_index).param
+    }
+
+    #[view]
+    public fun get_config(addr: vector<u8>, name: vector<u8>, function_index: u16): vector<u8>
+    acquires Registry {
+        let id = ModuleId { addr, name: string::utf8(name) };
+        let registry = borrow_global<Registry>(@tds);
+        let mkeys = table::borrow(&registry.verify_keys, id);
+        table::borrow(mkeys, function_index).config
     }
 
     /// verify_key is composed with vk+function_index+circuit_configs
@@ -68,13 +85,15 @@ module tds::registry {
         addr: vector<u8>,
         name: vector<u8>,
         code: vector<u8>,
-        func_verify_keys: vector<vector<u8>>
+        configs: vector<vector<u8>>,
+        func_verify_keys: vector<vector<u8>>,
+        params: vector<vector<u8>>,
     )
     acquires Modules, Registry {
         let module_id = ModuleId { addr, name: string::utf8(name) };
 
         add_module(module_id, code);
-        add_entry_function_verify_keys(module_id, func_verify_keys);
+        add_entry_function_verify_keys(module_id, configs, func_verify_keys, params);
     }
 
 
@@ -85,37 +104,44 @@ module tds::registry {
         table::add(&mut modules.modules, module_id, code);
     }
 
-    public fun add_entry_function_verify_keys(module_id: ModuleId, verify_keys: vector<vector<u8>>)
+    public fun add_entry_function_verify_keys(
+        module_id: ModuleId,
+        configs: vector<vector<u8>>,
+        verify_keys: vector<vector<u8>>,
+        params: vector<vector<u8>>
+    )
     acquires Registry {
         let registry = borrow_global_mut<Registry>(@tds);
         let i = vector::length(&verify_keys);
         while (i > 0) {
             i = i - 1;
-
+            let config = vector::pop_back(&mut configs);
             let vk = vector::pop_back(&mut verify_keys);
-            // le encoding of function index
-            //let new_len =vector::length(&vk) - 2;
-            //let func_index_bytes = vector::empty();
-            let lo = *vector::borrow(&vk, vector::length(&vk) - 2);
-            let hi = *vector::borrow(&vk, vector::length(&vk) - 1);
-            let func_index = (lo as u16)+ ((hi as u16) << 8);
-            add_entry_function_verify_key(&mut registry.verify_keys, module_id, func_index, vk);
+            let param = vector::pop_back(&mut params);
+
+            // le encoding of function_index
+            let hi = vector::pop_back(&mut vk);
+            let lo = vector::pop_back(&mut vk);
+            let func_index = (lo as u16) + ((hi as u16) << 8);
+            add_entry_function_verify_key(&mut registry.verify_keys, module_id, func_index, config, vk, param);
         };
         event::emit_event(&mut registry.event_handle, ModuleRegisterEvent { module_id });
     }
 
     fun add_entry_function_verify_key(
-        verify_keys: &mut table::Table<ModuleId, table::Table<u16, vector<u8>>>,
+        verify_keys: &mut table::Table<ModuleId, table::Table<u16, VerificationParameters>>,
         module_id: ModuleId,
         function_index: u16,
-        vk: vector<u8>
+        config: vector<u8>,
+        vk: vector<u8>,
+        param: vector<u8>,
     ) {
         if (table::contains(verify_keys, module_id)) {
             let t = table::borrow_mut(verify_keys, module_id);
-            table::add(t, function_index, vk);
+            table::add(t, function_index, VerificationParameters { config, vk, param });
         } else {
             let t = table::new();
-            table::add(&mut t, function_index, vk);
+            table::add(&mut t, function_index, VerificationParameters { config, vk, param });
             table::add(verify_keys, module_id, t);
         }
     }

@@ -11,7 +11,7 @@ use tds_node::vk_generator::{gen_vks, PublishModulesConfig};
 
 #[derive(Parser)]
 struct Cli {
-    #[arg(long = "path", short = 'p', value_parser = clap::value_parser!(PathBuf))]
+    #[arg(long = "path", short = 'p', value_parser = clap::value_parser ! (PathBuf))]
     package_path: Option<PathBuf>,
     #[command(subcommand)]
     command: Commands,
@@ -21,6 +21,7 @@ struct Cli {
 enum Commands {
     BuildAptosDeploymentFile(BuildAptosDeployment),
 }
+
 #[derive(Parser)]
 struct BuildAptosDeployment {
     #[arg(short, long = "module")]
@@ -28,6 +29,7 @@ struct BuildAptosDeployment {
     #[arg(long = "tds")]
     tds_address: String,
 }
+
 fn main() -> anyhow::Result<()> {
     let cli: Cli = Cli::parse();
 
@@ -91,8 +93,30 @@ fn main() -> anyhow::Result<()> {
                 ArgWithTypeJSON {
                     arg_type: "hex".to_string(),
                     value: serde_json::Value::Array(
-                        vks.into_iter()
-                            .map(|vk| serde_json::Value::String(format!("0x{}", hex::encode(vk))))
+                        vks.iter()
+                            .map(|vk| {
+                                serde_json::Value::String(format!("0x{}", hex::encode(&vk.config)))
+                            })
+                            .collect(),
+                    ),
+                },
+                ArgWithTypeJSON {
+                    arg_type: "hex".to_string(),
+                    value: serde_json::Value::Array(
+                        vks.iter()
+                            .map(|vk| {
+                                serde_json::Value::String(format!("0x{}", hex::encode(&vk.vk)))
+                            })
+                            .collect(),
+                    ),
+                },
+                ArgWithTypeJSON {
+                    arg_type: "hex".to_string(),
+                    value: serde_json::Value::Array(
+                        vks.iter()
+                            .map(|vk| {
+                                serde_json::Value::String(format!("0x{}", hex::encode(&vk.param)))
+                            })
                             .collect(),
                     ),
                 },

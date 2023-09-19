@@ -81,12 +81,19 @@ pub struct PublishModulesConfig {
     pub entry_function_config: Vec<EntryFunctionConfig>,
 }
 
+#[derive(Clone, Debug)]
+pub struct VerificationParameters {
+    pub config: Vec<u8>,
+    pub vk: Vec<u8>,
+    pub param: Vec<u8>,
+}
+
 pub fn gen_vks(
     PublishModulesConfig {
         modules,
         entry_function_config,
     }: PublishModulesConfig,
-) -> anyhow::Result<Vec<Vec<u8>>> {
+) -> anyhow::Result<Vec<VerificationParameters>> {
     let rt = Runtime::<Fr>::new();
     let mut state = StateStore::new();
     let mut compiled_modules = Vec::default();
@@ -136,12 +143,15 @@ pub fn gen_vks(
             traces,
             circuit_config.into(),
         )?;
+
+        let circuit_config = witness.circuit_config.clone();
+
         let vm_circuit = VmCircuit { witness };
         let k = find_best_k(&vm_circuit, vec![])?;
-        //let params: ParamsIPA<EqAffine> = ParamsIPA::new(k);
+
         let params = ParamsKZG::<Bn256>::setup(k, StdRng::from_entropy());
         let (vk, _) = setup_vm_circuit(&vm_circuit, &params)?;
-        // TODO: help wanted, https://github.com/young-rocks/zkmove-vm/issues/168
+
         let mut vk = vk.to_bytes(SerdeFormat::Processed);
 
         let entry_function_index = compiled_module
@@ -157,15 +167,25 @@ pub fn gen_vks(
                 "expect find index of function {}",
                 entry_function_name
             ))? as u16;
-        extend_vk_with_func_info(&mut vk, circuit_config, entry_function_index);
-        vks.push(vk);
+        extend_vk_with_func_info(&mut vk, entry_function_index);
+        let params = {
+            let mut serialzied_param = Vec::new();
+            params.write_custom(&mut serialzied_param, SerdeFormat::Processed)?;
+            serialzied_param
+        };
+
+        vks.push(VerificationParameters {
+            config: bcs::to_bytes(&circuit_config)?, // TODO: change to a more common serialization lib.
+            vk,
+            param: params,
+        });
     }
     Ok(vks)
 }
 
 fn extend_vk_with_func_info(
     vk: &mut Vec<u8>,
-    _circuit_config: CircuitConfig,
+    //_circuit_config: CircuitConfig,
     entry_function_index: u16,
 ) {
     vk.append(&mut entry_function_index.to_le_bytes().to_vec());

@@ -6448,6 +6448,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "aptos-events",
+ "bcs 0.1.5",
  "halo2_proofs",
  "move-core-types 0.0.4 (git+https://github.com/young-rocks/move?rev=b036995a)",
  "movelang",
@@ -7166,6 +7167,7 @@ dependencies = [
  "petgraph 0.6.4",
  "plotters",
  "rand 0.8.5",
+ "serde 1.0.188",
 ]
 
 [[package]]

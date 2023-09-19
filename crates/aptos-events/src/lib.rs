@@ -31,6 +31,8 @@ const TDS_QUERY_EVENT_HANDLES_STRUCT_NAME: &str = "EventHandles";
 const TDS_QUERY_FIELD_NAME_NEW_EVENT_HANDLE: &str = "new_event_handle";
 const TDS_QUERY_FUNC_NAME_GET_MODULE: &str = "get_module";
 const TDS_QUERY_FUNC_NAME_GET_VK: &str = "get_vk";
+const TDS_QUERY_FUNC_NAME_GET_PARAM: &str = "get_param";
+const TDS_QUERY_FUNC_NAME_GET_CONFIG: &str = "get_config";
 
 type AptosResult<T> = Result<T, RestError>;
 
@@ -87,9 +89,7 @@ impl TdsQueryManager {
     }
     pub async fn prepare_modules(
         &self,
-        UserQuery {
-            query,  version, ..
-        }: &UserQuery,
+        UserQuery { query, version, .. }: &UserQuery,
     ) -> AptosResult<Vec<Vec<u8>>> {
         let req = ViewRequest {
             function: EntryFunctionId {
@@ -120,36 +120,89 @@ impl TdsQueryManager {
     }
     pub async fn get_vk_for_query(
         &self,
-        UserQuery {
-            query,  version, ..
-        }: &UserQuery,
-    ) -> AptosResult<Vec<u8>> {
-        let req = ViewRequest {
-            function: EntryFunctionId {
-                module: MoveModuleId {
-                    address: self.param.tds_address.into(),
-                    name: IdentifierWrapper(Identifier::new(TDS_QUERY_MODULE_NAME).unwrap()),
+        UserQuery { query, version, .. }: &UserQuery,
+    ) -> AptosResult<(Vec<u8>, Vec<u8>, Vec<u8>)> {
+        let reqs = vec![
+            ViewRequest {
+                function: EntryFunctionId {
+                    module: MoveModuleId {
+                        address: self.param.tds_address.into(),
+                        name: IdentifierWrapper(Identifier::new(TDS_QUERY_MODULE_NAME).unwrap()),
+                    },
+                    name: IdentifierWrapper(
+                        Identifier::new(TDS_QUERY_FUNC_NAME_GET_CONFIG).unwrap(),
+                    ),
                 },
-                name: IdentifierWrapper(Identifier::new(TDS_QUERY_FUNC_NAME_GET_VK).unwrap()),
+                type_arguments: vec![],
+                arguments: vec![
+                    serde_json::to_value(query.module_address.clone()).unwrap(),
+                    serde_json::to_value(query.module_name.clone()).unwrap(),
+                    serde_json::to_value(query.function_index).unwrap(),
+                ],
             },
-            type_arguments: vec![],
-            arguments: vec![
-                serde_json::to_value(query.module_address.clone()).unwrap(),
-                serde_json::to_value(query.module_name.clone()).unwrap(),
-                serde_json::to_value(query.function_index).unwrap(),
-            ],
-        };
-        let response = self
-            .client
-            .view(&req, Some(*version))
-            .await?
+            ViewRequest {
+                function: EntryFunctionId {
+                    module: MoveModuleId {
+                        address: self.param.tds_address.into(),
+                        name: IdentifierWrapper(Identifier::new(TDS_QUERY_MODULE_NAME).unwrap()),
+                    },
+                    name: IdentifierWrapper(Identifier::new(TDS_QUERY_FUNC_NAME_GET_VK).unwrap()),
+                },
+                type_arguments: vec![],
+                arguments: vec![
+                    serde_json::to_value(query.module_address.clone()).unwrap(),
+                    serde_json::to_value(query.module_name.clone()).unwrap(),
+                    serde_json::to_value(query.function_index).unwrap(),
+                ],
+            },
+            ViewRequest {
+                function: EntryFunctionId {
+                    module: MoveModuleId {
+                        address: self.param.tds_address.into(),
+                        name: IdentifierWrapper(Identifier::new(TDS_QUERY_MODULE_NAME).unwrap()),
+                    },
+                    name: IdentifierWrapper(
+                        Identifier::new(TDS_QUERY_FUNC_NAME_GET_PARAM).unwrap(),
+                    ),
+                },
+                type_arguments: vec![],
+                arguments: vec![
+                    serde_json::to_value(query.module_address.clone()).unwrap(),
+                    serde_json::to_value(query.module_name.clone()).unwrap(),
+                    serde_json::to_value(query.function_index).unwrap(),
+                ],
+            },
+        ];
+        let mut reqs: Vec<_> = reqs
+            .iter()
+            .map(|req| self.client.view(req, Some(*version)))
+            .collect();
+
+        let (param, vk, config) = tokio::try_join!(
+            reqs.pop().unwrap(),
+            reqs.pop().unwrap(),
+            reqs.pop().unwrap()
+        )?;
+        let param: Vec<u8> = param
             .into_inner()
-            .pop();
-        let vk_bytes: Vec<_> = response
+            .pop()
             .map(serde_json::from_value)
             .transpose()?
-            .expect("view get_vk should return one value");
-        Ok(vk_bytes)
+            .expect("view get_param return value");
+        let vk: Vec<u8> = vk
+            .into_inner()
+            .pop()
+            .map(serde_json::from_value)
+            .transpose()?
+            .expect("view get_vk return value");
+        let config: Vec<u8> = config
+            .into_inner()
+            .pop()
+            .map(serde_json::from_value)
+            .transpose()?
+            .expect("view get_config return value");
+
+        Ok((config, vk, param))
     }
 
     pub fn get_query_stream(self) -> impl Stream<Item = AptosResult<UserQuery>> {

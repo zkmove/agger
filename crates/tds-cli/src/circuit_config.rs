@@ -1,8 +1,6 @@
 use anyhow::Context;
 use move_package::resolution::resolution_graph::ResolvedTable;
-use movelang::argument::{
-    parse_transaction_argument, parse_type_tags, ScriptArguments,
-};
+use movelang::argument::{parse_transaction_argument, parse_type_tags, ScriptArguments};
 
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
