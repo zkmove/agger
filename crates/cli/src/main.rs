@@ -1,5 +1,6 @@
-use agger_cli::circuit_config::{parse_entry_function_config, parse_from_move_toml};
-use agger_node::vk_generator::{gen_vks, PublishModulesConfig};
+use std::path::PathBuf;
+
+use clap::value_parser;
 use clap::{Parser, Subcommand};
 use move_compiler::compiled_unit::CompiledUnit;
 use move_package::compilation::compiled_package::OnDiskCompiledPackage;
@@ -7,11 +8,13 @@ use move_package::compilation::package_layout::CompiledPackageLayout;
 use move_package::source_package::layout::SourcePackageLayout;
 use move_package::source_package::manifest_parser::parse_move_manifest_from_file;
 use serde::{Deserialize, Serialize};
-use std::path::PathBuf;
+
+use agger_cli::circuit_config::{parse_entry_function_config, parse_from_move_toml};
+use agger_node::vk_generator::{gen_vks, PublishModulesConfig};
 
 #[derive(Parser)]
 struct Cli {
-    #[arg(long = "path", short = 'p', value_parser = clap::value_parser ! (PathBuf))]
+    #[arg(long = "path", short = 'p', value_parser = value_parser ! (PathBuf))]
     package_path: Option<PathBuf>,
     #[command(subcommand)]
     command: Commands,

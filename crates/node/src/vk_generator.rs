@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use anyhow::anyhow;
 use halo2_proofs::halo2curves::bn256::{Bn256, Fr};
 use halo2_proofs::poly::kzg::commitment::ParamsKZG;
@@ -10,7 +12,6 @@ use movelang::move_binary_format::CompiledModule;
 use movelang::value::{ModuleId, TypeTag};
 use rand::prelude::StdRng;
 use rand::SeedableRng;
-use std::str::FromStr;
 use zkmove_vm::runtime::Runtime;
 use zkmove_vm::state::StateStore;
 use zkmove_vm_circuit::circuit::VmCircuit;
@@ -86,6 +87,12 @@ pub struct VerificationParameters {
     pub config: Vec<u8>,
     pub vk: Vec<u8>,
     pub param: Vec<u8>,
+}
+
+impl VerificationParameters {
+    pub fn new(config: Vec<u8>, vk: Vec<u8>, param: Vec<u8>) -> Self {
+        Self { config, vk, param }
+    }
 }
 
 pub fn gen_vks(

@@ -1,12 +1,14 @@
-use crate::vk_generator::VerificationParameters;
 use anyhow::{ensure, Result};
-use aptos_events::UserQuery;
 use halo2_proofs::halo2curves::bn256::{Bn256, Fr};
 use halo2_proofs::poly::kzg::commitment::ParamsKZG;
 use halo2_proofs::SerdeFormat;
 use zkmove_vm_circuit::circuit::VmCircuit;
 use zkmove_vm_circuit::witness::Witness;
 use zkmove_vm_circuit::{prove_vm_circuit_kzg, setup_vm_circuit};
+
+use agger_contract_types::UserQuery;
+
+use crate::vk_generator::VerificationParameters;
 
 pub fn prove(
     _query: UserQuery,

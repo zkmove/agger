@@ -7,11 +7,13 @@ use aptos_sdk::rest_client::aptos_api_types::{
 use aptos_sdk::rest_client::error::RestError;
 pub use aptos_sdk::rest_client::AptosBaseUrl;
 use aptos_sdk::rest_client::Client;
-use aptos_sdk::types::account_address::AccountAddress;
-use async_stream::try_stream;
+pub use aptos_sdk::types::account_address::AccountAddress as AptosAccountAddress;
+use async_stream::{stream};
 use futures_core::Stream;
-use serde::{Deserialize, Serialize};
+
 use tokio::time::sleep;
+
+use agger_contract_types::*;
 
 #[derive(Clone, Debug)]
 pub struct AggerQueryManager {
@@ -21,64 +23,10 @@ pub struct AggerQueryManager {
 
 #[derive(Clone, Debug)]
 pub struct AggerQueryParam {
-    aggger_address: AccountAddress,
+    pub aggger_address: AptosAccountAddress,
 }
-
-const AGGER_QUERY_MODULE_NAME: &str = "query";
-const AGGER_QUERY_QUERY_STRUCT_NAME: &str = "Query";
-const AGGER_QUERY_QUERIES_STRUCT_NAME: &str = "Queries";
-const AGGER_QUERY_EVENT_HANDLES_STRUCT_NAME: &str = "EventHandles";
-const AGGER_QUERY_FIELD_NAME_NEW_EVENT_HANDLE: &str = "new_event_handle";
-const AGGER_QUERY_FUNC_NAME_GET_MODULE: &str = "get_module";
-const AGGER_QUERY_FUNC_NAME_GET_VK: &str = "get_vk";
-const AGGER_QUERY_FUNC_NAME_GET_PARAM: &str = "get_param";
-const AGGER_QUERY_FUNC_NAME_GET_CONFIG: &str = "get_config";
 
 type AptosResult<T> = Result<T, RestError>;
-
-#[derive(Debug, Clone, Deserialize, Serialize)]
-struct NewQueryEvent {
-    user: AccountAddress,
-    id: u64,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct Query {
-    pub module_address: Vec<u8>,
-    pub module_name: Vec<u8>,
-    pub function_index: u16,
-    pub deadline: u64,
-    pub args: Vec<Vec<u8>>,
-    pub ty_args: Vec<Vec<u8>>,
-    pub success: Option<bool>,
-    pub result: Option<Vec<u8>>,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize)]
-struct Queries {
-    query_counter: u64,
-    queries: TableWithLength,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize)]
-struct TableWithLength {
-    inner: Table,
-    length: u64,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize)]
-struct Table {
-    handle: AccountAddress,
-}
-
-#[derive(Clone, Debug)]
-pub struct UserQuery {
-    pub id: u64,
-    pub user: AccountAddress,
-    pub query: Query,
-    /// version at the query is triggered
-    pub version: u64,
-}
 
 impl AggerQueryManager {
     pub fn new(aptos_url: AptosBaseUrl, param: AggerQueryParam) -> Self {
@@ -118,6 +66,8 @@ impl AggerQueryManager {
         // TODO: fetch deps if any
         Ok(vec![module_bytes])
     }
+
+    ///return (config, vk,param) for a user query
     pub async fn get_vk_for_query(
         &self,
         UserQuery { query, version, .. }: &UserQuery,
@@ -206,17 +156,28 @@ impl AggerQueryManager {
     }
 
     pub fn get_query_stream(self) -> impl Stream<Item = AptosResult<UserQuery>> {
-        try_stream! {
+        stream! {
             let mut cur = 0;
             loop {
-                let event = self.get_event(cur).await?;
-                if let Some(evt) = event {
-                    let q = self.handle_new_query_event(evt).await?;
-                    yield q;
-                    cur += 1;
-                } else {
-                    sleep(Duration::from_secs(30)).await;
+                let event = self.get_event(cur).await;
+                match event {
+                    Ok(Some(evt)) => {
+                        let q = self.handle_new_query_event(evt).await;
+                        yield q;
+                        cur += 1;
+                    }
+                    Ok(None) => {
+                        sleep(Duration::from_secs(30)).await;
+                    }
+                    Err(e) => {
+                        yield Err(e)
+                    }
                 }
+                // if let Some(evt) = event {
+                //
+                // } else {
+                //     sleep(Duration::from_secs(30)).await;
+                // }
             }
         }
     }
@@ -228,7 +189,7 @@ impl AggerQueryManager {
             .get_account_resource_at_version_bcs(
                 new_query_event.user,
                 format!(
-                    "{}/{}/{}",
+                    "{:#x}::{}::{}",
                     self.param.aggger_address,
                     AGGER_QUERY_MODULE_NAME,
                     AGGER_QUERY_QUERIES_STRUCT_NAME
@@ -245,7 +206,7 @@ impl AggerQueryManager {
                 queries.queries.inner.handle,
                 "u64",
                 format!(
-                    "{}/{}/{}",
+                    "{:#x}::{}::{}",
                     self.param.aggger_address,
                     AGGER_QUERY_MODULE_NAME,
                     AGGER_QUERY_QUERY_STRUCT_NAME
@@ -256,10 +217,11 @@ impl AggerQueryManager {
             )
             .await?;
         Ok(UserQuery {
+            version,
+            sequence_number: event.sequence_number.0,
             id: new_query_event.id,
             user: new_query_event.user,
             query: query.into_inner(),
-            version,
         })
     }
     async fn get_event(&self, at: u64) -> AptosResult<Option<VersionedEvent>> {
@@ -268,7 +230,7 @@ impl AggerQueryManager {
             .get_account_events(
                 self.param.aggger_address,
                 format!(
-                    "{}/{}/{}",
+                    "{:#x}::{}::{}",
                     self.param.aggger_address,
                     AGGER_QUERY_MODULE_NAME,
                     AGGER_QUERY_EVENT_HANDLES_STRUCT_NAME

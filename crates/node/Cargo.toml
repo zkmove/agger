@@ -6,13 +6,19 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+log.workspace = true
 bcs = { workspace = true }
 anyhow = { workspace = true }
 tokio = { workspace = true }
+async-stream = { workspace = true }
+futures-util.workspace = true
+clap = { workspace = true }
 move-core-types = { workspace = true }
-movelang = { workspace = true }
-zkmove-vm-circuit = { workspace = true }
-zkmove-vm = { workspace = true }
+movelang.workspace = true
+zkmove-vm-circuit.workspace = true
+zkmove-vm.workspace = true
 halo2_proofs = { workspace = true }
 rand = { workspace = true }
 aptos-events = { path = "../aptos-events" }
+agger-storage = { path = "../storage" }
+agger-contract-types = { path = "../contract-types" }

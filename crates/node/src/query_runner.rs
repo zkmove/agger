@@ -1,8 +1,5 @@
 use anyhow::anyhow;
 use halo2_proofs::halo2curves::bn256::Fr;
-
-use crate::vk_generator::VerificationParameters;
-use aptos_events::UserQuery;
 use move_core_types::resolver::ModuleResolver;
 use movelang::argument::{
     parse_transaction_argument, parse_type_tags, Identifier, ScriptArguments,
@@ -14,6 +11,10 @@ use movelang::value::ModuleId;
 use zkmove_vm::runtime::Runtime;
 use zkmove_vm::state::StateStore;
 use zkmove_vm_circuit::witness::Witness;
+
+use agger_contract_types::UserQuery;
+
+use crate::vk_generator::VerificationParameters;
 
 pub fn witness(
     query: UserQuery,
