@@ -10,6 +10,7 @@ members = [
 resolver = "2"
 [workspace.dependencies]
 log = { version = "0.4" }
+env_logger = { version = "0.9" }
 rand = { version = "0.8" }
 toml = { version = "0.8" }
 anyhow = { version = "1" }

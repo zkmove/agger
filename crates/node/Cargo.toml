@@ -7,6 +7,7 @@ edition = "2021"
 
 [dependencies]
 log.workspace = true
+env_logger.workspace = true
 bcs = { workspace = true }
 anyhow = { workspace = true }
 tokio = { workspace = true }
@@ -19,6 +20,7 @@ zkmove-vm-circuit.workspace = true
 zkmove-vm.workspace = true
 halo2_proofs = { workspace = true }
 rand = { workspace = true }
+threadpool.workspace = true
 aptos-events = { path = "../aptos-events" }
 agger-storage = { path = "../storage" }
 agger-contract-types = { path = "../contract-types" }
