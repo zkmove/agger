@@ -118,6 +118,7 @@ dependencies = [
  "anyhow",
  "aptos-schemadb",
  "bcs 0.1.5",
+ "serde 1.0.188",
 ]
 
 [[package]]

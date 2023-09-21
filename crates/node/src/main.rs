@@ -3,18 +3,16 @@ use std::sync::Arc;
 
 use clap::Parser;
 use futures_util::{pin_mut, StreamExt, TryFutureExt, TryStreamExt};
-use log::{error};
-
+use log::error;
 use tokio::select;
 use tokio::sync::mpsc;
 use tokio::sync::mpsc::Receiver;
 
 use agger_contract_types::UserQuery;
 use agger_node::proving::{ProveTask, ProvingTaskDispatcher};
-
 use agger_node::vk_generator::VerificationParameters;
-use agger_storage::schemadb::Options;
-use agger_storage::{UserQueryKey, UserQuerySchema, UserQueryValue};
+use agger_storage::schemadb::{Options, DB};
+use agger_storage::{UserQueryKey, UserQueryProofSchema, UserQuerySchema, UserQueryValue};
 use aptos_events::{AggerQueryManager, AggerQueryParam, AptosAccountAddress, AptosBaseUrl};
 
 #[derive(Parser, Debug)]
@@ -62,8 +60,6 @@ async fn main() -> anyhow::Result<()> {
                 options.create_if_missing(true);
                 options.create_missing_column_families(true);
 
-                
-
                 agger_storage::schemadb::DB::open(
                     store_path.as_deref().unwrap_or(Path::new(".")),
                     "agger-db",
@@ -72,6 +68,7 @@ async fn main() -> anyhow::Result<()> {
                 )?
             };
             let store = Arc::new(store);
+            let proof_responder = ProofResponder { db: store.clone() };
 
             let prover_threads = threadpool::Builder::new()
                 .thread_name("provers".to_string())
@@ -98,7 +95,7 @@ async fn main() -> anyhow::Result<()> {
             pin_mut!(new_query_event_stream);
 
             let mut dispatch_task_handle = tokio::spawn(provers.run());
-            let mut output_handle = tokio::spawn(handle_prove_output(output_receiver));
+            let mut output_handle = tokio::spawn(proof_responder.start(output_receiver));
             loop {
                 select! {
                     _output_task_result = &mut output_handle => {
@@ -152,9 +149,21 @@ async fn prepare_prove_data(
     Ok((modules, vp))
 }
 
-async fn handle_prove_output(mut receiver: Receiver<(UserQuery, anyhow::Result<Vec<u8>>)>) {
-    while let Some(output) = receiver.recv().await {
-        println!("prove result: {:?}", output);
-        // TODO: submit proof
+struct ProofResponder {
+    db: Arc<DB>,
+}
+
+impl ProofResponder {
+    async fn start(
+        self,
+        mut receiver: Receiver<(UserQuery, anyhow::Result<Vec<u8>>)>,
+    ) -> anyhow::Result<()> {
+        while let Some((query, output)) = receiver.recv().await {
+            println!("prove result: {:?}", output);
+            self.db
+                .put::<UserQueryProofSchema>(query.sequence_number.into(), output.into())?;
+            // TODO: submit proof
+        }
+        Ok(())
     }
 }

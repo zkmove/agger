@@ -1,6 +1,7 @@
 pub use aptos_schemadb as schemadb;
 use aptos_schemadb::schema::{KeyCodec, Schema, ValueCodec};
 use aptos_schemadb::{define_schema, ColumnFamilyName, DB};
+use serde::{Deserialize, Serialize};
 
 use agger_contract_types::UserQuery;
 
@@ -73,17 +74,59 @@ impl ValueCodec<UserQuerySchema> for UserQueryValue {
     }
 }
 
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct UserQueryProvingResult {
+    success: bool,
+    result: Vec<u8>,
+    /// whether the proof is submitted to onchain.
+    submitted: bool,
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+impl From<anyhow::Result<Vec<u8>>> for UserQueryProvingResult {
+    fn from(value: anyhow::Result<Vec<u8>>) -> Self {
+        match value {
+            Err(e) => Self {
+                success: false,
+                result: e.root_cause().to_string().into_bytes(),
+                submitted: false,
+            },
+            Ok(v) => Self {
+                success: true,
+                result: v,
+                submitted: false,
+            },
+        }
+    }
+}
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+#[derive(Debug)]
+pub struct UserQueryProofSchema;
+
+impl Schema for UserQueryProofSchema {
+    const COLUMN_FAMILY_NAME: ColumnFamilyName = "proofs";
+    type Key = UserQueryKey;
+
+    type Value = UserQueryProvingResult;
+}
+
+impl KeyCodec<UserQueryProofSchema> for UserQueryKey {
+    fn encode_key(&self) -> anyhow::Result<Vec<u8>> {
+        Ok(bcs::to_bytes(&self.sequence_number)?)
+    }
+
+    fn decode_key(data: &[u8]) -> anyhow::Result<Self> {
+        Ok(Self {
+            sequence_number: bcs::from_bytes(data)?,
+        })
+    }
+}
+
+impl ValueCodec<UserQueryProofSchema> for UserQueryProvingResult {
+    fn encode_value(&self) -> anyhow::Result<Vec<u8>> {
+        Ok(bcs::to_bytes(&self)?)
+    }
+
+    fn decode_value(data: &[u8]) -> anyhow::Result<Self> {
+        Ok(bcs::from_bytes(data)?)
     }
 }

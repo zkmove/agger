@@ -16,3 +16,4 @@ hello = "0x1234"
 
 [circuits."hello::helloworld::say_hi"]
 args = ["1u8", "true", "0x1234"]
+[circuits."hello::helloworld::say_he"]

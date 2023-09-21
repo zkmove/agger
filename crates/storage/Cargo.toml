@@ -8,5 +8,6 @@ edition = "2021"
 [dependencies]
 anyhow.workspace = true
 bcs.workspace = true
+serde.workspace = true
 aptos-schemadb.workspace = true
 agger-contract-types = { path = "../contract-types" }
