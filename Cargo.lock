@@ -78,7 +78,7 @@ dependencies = [
 name = "agger-contract-types"
 version = "0.1.0"
 dependencies = [
- "move-core-types 0.0.4",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "serde 1.0.188",
 ]
 
@@ -239,6 +239,7 @@ checksum = "a4668cab20f66d8d020e1fbc0ebe47217433c1b6c8f2040faf858554e394ace6"
 [[package]]
 name = "aptos-aggregator"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "aptos-crypto",
@@ -246,8 +247,8 @@ dependencies = [
  "aptos-types",
  "bcs 0.1.4",
  "better_any",
- "move-binary-format 0.0.3",
- "move-core-types 0.0.4",
+ "move-binary-format 0.0.3 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "move-table-extension",
  "once_cell",
  "smallvec",
@@ -256,6 +257,7 @@ dependencies = [
 [[package]]
 name = "aptos-api-types"
 version = "0.0.1"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "aptos-config",
@@ -270,8 +272,8 @@ dependencies = [
  "bcs 0.1.4",
  "hex",
  "indoc",
- "move-binary-format 0.0.3",
- "move-core-types 0.0.4",
+ "move-binary-format 0.0.3 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "move-resource-viewer",
  "poem",
  "poem-openapi",
@@ -282,6 +284,7 @@ dependencies = [
 [[package]]
 name = "aptos-bitvec"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "serde 1.0.188",
  "serde_bytes",
@@ -290,6 +293,7 @@ dependencies = [
 [[package]]
 name = "aptos-block-executor"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "aptos-aggregator",
@@ -304,7 +308,7 @@ dependencies = [
  "bcs 0.1.4",
  "crossbeam",
  "dashmap",
- "move-binary-format 0.0.3",
+ "move-binary-format 0.0.3 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "num_cpus",
  "once_cell",
  "parking_lot 0.12.1",
@@ -314,6 +318,7 @@ dependencies = [
 [[package]]
 name = "aptos-block-partitioner"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "aptos-crypto",
@@ -324,7 +329,7 @@ dependencies = [
  "clap 4.4.2",
  "dashmap",
  "itertools 0.10.5",
- "move-core-types 0.0.4",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "once_cell",
  "rand 0.7.3",
  "rayon",
@@ -333,18 +338,20 @@ dependencies = [
 [[package]]
 name = "aptos-cached-packages"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "aptos-framework",
  "aptos-types",
  "bcs 0.1.4",
  "include_dir 0.7.3",
- "move-core-types 0.0.4",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "once_cell",
 ]
 
 [[package]]
 name = "aptos-config"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "aptos-crypto",
@@ -374,6 +381,7 @@ dependencies = [
 [[package]]
 name = "aptos-crypto"
 version = "0.0.3"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "aptos-crypto-derive",
@@ -410,6 +418,7 @@ dependencies = [
 [[package]]
 name = "aptos-crypto-derive"
 version = "0.0.3"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "proc-macro2 1.0.66",
  "quote 1.0.33",
@@ -432,6 +441,7 @@ dependencies = [
 [[package]]
 name = "aptos-framework"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "aptos-aggregator",
@@ -460,19 +470,19 @@ dependencies = [
  "itertools 0.10.5",
  "libsecp256k1",
  "log",
- "move-binary-format 0.0.3",
- "move-command-line-common 0.1.0",
- "move-compiler 0.0.1",
- "move-core-types 0.0.4",
- "move-docgen 0.1.0",
- "move-model 0.1.0",
- "move-package 0.1.0",
+ "move-binary-format 0.0.3 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-command-line-common 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-compiler 0.0.1 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-docgen 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-model 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-package 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "move-prover",
  "move-prover-boogie-backend",
  "move-stackless-bytecode",
  "move-table-extension",
- "move-vm-runtime 0.1.0",
- "move-vm-types 0.1.0",
+ "move-vm-runtime 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-vm-types 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "num-traits 0.2.16",
  "once_cell",
  "rand 0.7.3",
@@ -496,6 +506,7 @@ dependencies = [
 [[package]]
 name = "aptos-gas"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "aptos-framework",
@@ -508,31 +519,35 @@ dependencies = [
  "aptos-vm-types",
  "bcs 0.1.4",
  "clap 4.4.2",
- "move-binary-format 0.0.3",
- "move-core-types 0.0.4",
- "move-model 0.1.0",
+ "move-binary-format 0.0.3 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-model 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "move-table-extension",
- "move-vm-types 0.1.0",
+ "move-vm-types 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
 ]
 
 [[package]]
 name = "aptos-gas-algebra-ext"
 version = "0.0.1"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
- "move-core-types 0.0.4",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
 ]
 
 [[package]]
 name = "aptos-global-constants"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 
 [[package]]
 name = "aptos-infallible"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 
 [[package]]
 name = "aptos-log-derive"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "proc-macro2 1.0.66",
  "quote 1.0.33",
@@ -542,6 +557,7 @@ dependencies = [
 [[package]]
 name = "aptos-logger"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "aptos-infallible",
  "aptos-log-derive",
@@ -565,6 +581,7 @@ dependencies = [
 [[package]]
 name = "aptos-metrics-core"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "prometheus",
@@ -573,19 +590,20 @@ dependencies = [
 [[package]]
 name = "aptos-move-stdlib"
 version = "0.1.1"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "hex",
  "log",
- "move-binary-format 0.0.3",
- "move-command-line-common 0.1.0",
- "move-compiler 0.0.1",
- "move-core-types 0.0.4",
- "move-docgen 0.1.0",
+ "move-binary-format 0.0.3 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-command-line-common 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-compiler 0.0.1 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-docgen 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "move-errmapgen",
  "move-prover",
- "move-vm-runtime 0.1.0",
- "move-vm-types 0.1.0",
+ "move-vm-runtime 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-vm-types 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "sha2 0.9.9",
  "sha3 0.9.1",
  "smallvec",
@@ -595,6 +613,7 @@ dependencies = [
 [[package]]
 name = "aptos-mvhashmap"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "aptos-aggregator",
@@ -609,6 +628,7 @@ dependencies = [
 [[package]]
 name = "aptos-node-identity"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "aptos-types",
@@ -620,6 +640,7 @@ dependencies = [
 [[package]]
 name = "aptos-openapi"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "async-trait",
  "percent-encoding",
@@ -632,18 +653,20 @@ dependencies = [
 [[package]]
 name = "aptos-package-builder"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "aptos-framework",
  "itertools 0.10.5",
- "move-command-line-common 0.1.0",
- "move-package 0.1.0",
+ "move-command-line-common 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-package 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "tempfile",
 ]
 
 [[package]]
 name = "aptos-rest-client"
 version = "0.0.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "aptos-api-types",
@@ -655,8 +678,8 @@ dependencies = [
  "bytes",
  "futures",
  "hex",
- "move-binary-format 0.0.3",
- "move-core-types 0.0.4",
+ "move-binary-format 0.0.3 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "poem-openapi",
  "reqwest",
  "serde 1.0.188",
@@ -669,6 +692,7 @@ dependencies = [
 [[package]]
 name = "aptos-schemadb"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "aptos-infallible",
@@ -681,6 +705,7 @@ dependencies = [
 [[package]]
 name = "aptos-scratchpad"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "aptos-crypto",
  "aptos-infallible",
@@ -696,6 +721,7 @@ dependencies = [
 [[package]]
 name = "aptos-sdk"
 version = "0.0.3"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "aptos-api-types",
@@ -706,7 +732,7 @@ dependencies = [
  "aptos-types",
  "bcs 0.1.4",
  "ed25519-dalek-bip32",
- "move-core-types 0.0.4",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "rand_core 0.5.1",
  "serde 1.0.188",
  "tiny-bip39",
@@ -715,13 +741,14 @@ dependencies = [
 [[package]]
 name = "aptos-sdk-builder"
 version = "0.2.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "aptos-types",
  "bcs 0.1.4",
  "clap 4.4.2",
  "heck 0.3.3",
- "move-core-types 0.0.4",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "once_cell",
  "regex",
  "serde-generate",
@@ -733,6 +760,7 @@ dependencies = [
 [[package]]
 name = "aptos-secure-net"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "aptos-logger",
  "aptos-metrics-core",
@@ -744,6 +772,7 @@ dependencies = [
 [[package]]
 name = "aptos-secure-storage"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "aptos-crypto",
@@ -765,6 +794,7 @@ dependencies = [
 [[package]]
 name = "aptos-short-hex-str"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "mirai-annotations",
  "serde 1.0.188",
@@ -775,6 +805,7 @@ dependencies = [
 [[package]]
 name = "aptos-speculative-state-helper"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "aptos-infallible",
@@ -786,6 +817,7 @@ dependencies = [
 [[package]]
 name = "aptos-state-view"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "aptos-crypto",
@@ -799,6 +831,7 @@ dependencies = [
 [[package]]
 name = "aptos-storage-interface"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "aptos-crypto",
@@ -814,7 +847,7 @@ dependencies = [
  "crossbeam-channel",
  "dashmap",
  "itertools 0.10.5",
- "move-core-types 0.0.4",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "once_cell",
  "parking_lot 0.12.1",
  "rayon",
@@ -825,6 +858,7 @@ dependencies = [
 [[package]]
 name = "aptos-temppath"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "hex",
  "rand 0.7.3",
@@ -833,6 +867,7 @@ dependencies = [
 [[package]]
 name = "aptos-time-service"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "aptos-infallible",
  "enum_dispatch",
@@ -845,6 +880,7 @@ dependencies = [
 [[package]]
 name = "aptos-types"
 version = "0.0.3"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "aptos-bitvec",
@@ -856,7 +892,7 @@ dependencies = [
  "derivative",
  "hex",
  "itertools 0.10.5",
- "move-core-types 0.0.4",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "move-table-extension",
  "num-derive",
  "num-traits 0.2.16",
@@ -876,10 +912,12 @@ dependencies = [
 [[package]]
 name = "aptos-utils"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 
 [[package]]
 name = "aptos-vault-client"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "aptos-crypto",
  "base64 0.13.1",
@@ -895,6 +933,7 @@ dependencies = [
 [[package]]
 name = "aptos-vm"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "aptos-aggregator",
@@ -918,14 +957,14 @@ dependencies = [
  "dashmap",
  "fail 0.5.1",
  "futures",
- "move-binary-format 0.0.3",
- "move-bytecode-utils 0.1.0",
- "move-bytecode-verifier 0.1.0",
- "move-core-types 0.0.4",
+ "move-binary-format 0.0.3 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-bytecode-utils 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-bytecode-verifier 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "move-table-extension",
- "move-vm-runtime 0.1.0",
+ "move-vm-runtime 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "move-vm-test-utils",
- "move-vm-types 0.1.0",
+ "move-vm-types 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "num_cpus",
  "once_cell",
  "ouroboros 0.15.6",
@@ -940,6 +979,7 @@ dependencies = [
 [[package]]
 name = "aptos-vm-logging"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "aptos-crypto",
  "aptos-logger",
@@ -955,13 +995,14 @@ dependencies = [
 [[package]]
 name = "aptos-vm-types"
 version = "0.0.1"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "aptos-aggregator",
  "aptos-state-view",
  "aptos-types",
- "move-binary-format 0.0.3",
- "move-core-types 0.0.4",
+ "move-binary-format 0.0.3 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
 ]
 
 [[package]]
@@ -3808,16 +3849,17 @@ checksum = "1fafa6961cabd9c63bcd77a45d7e3b7f3b552b70417831fb0f56db717e72407e"
 [[package]]
 name = "move-abigen"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "bcs 0.1.4",
  "heck 0.3.3",
  "log",
- "move-binary-format 0.0.3",
- "move-bytecode-verifier 0.1.0",
- "move-command-line-common 0.1.0",
- "move-core-types 0.0.4",
- "move-model 0.1.0",
+ "move-binary-format 0.0.3 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-bytecode-verifier 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-command-line-common 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-model 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "serde 1.0.188",
 ]
 
@@ -3841,10 +3883,11 @@ dependencies = [
 [[package]]
 name = "move-binary-format"
 version = "0.0.3"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "indexmap 1.9.3",
- "move-core-types 0.0.4",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "once_cell",
  "ref-cast",
  "serde 1.0.188",
@@ -3867,6 +3910,7 @@ dependencies = [
 [[package]]
 name = "move-borrow-graph"
 version = "0.0.1"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 
 [[package]]
 name = "move-borrow-graph"
@@ -3876,14 +3920,15 @@ source = "git+https://github.com/young-rocks/move?rev=b036995a#b036995a879174f54
 [[package]]
 name = "move-bytecode-source-map"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "bcs 0.1.4",
- "move-binary-format 0.0.3",
- "move-command-line-common 0.1.0",
- "move-core-types 0.0.4",
- "move-ir-types 0.1.0",
- "move-symbol-pool 0.1.0",
+ "move-binary-format 0.0.3 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-command-line-common 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-ir-types 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-symbol-pool 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "serde 1.0.188",
 ]
 
@@ -3905,10 +3950,11 @@ dependencies = [
 [[package]]
 name = "move-bytecode-utils"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
- "move-binary-format 0.0.3",
- "move-core-types 0.0.4",
+ "move-binary-format 0.0.3 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "petgraph 0.5.1",
  "serde-reflection 0.3.6",
 ]
@@ -3928,12 +3974,13 @@ dependencies = [
 [[package]]
 name = "move-bytecode-verifier"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "fail 0.4.0",
- "move-binary-format 0.0.3",
- "move-borrow-graph 0.0.1",
- "move-core-types 0.0.4",
+ "move-binary-format 0.0.3 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-borrow-graph 0.0.1 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "petgraph 0.5.1",
  "typed-arena",
 ]
@@ -3954,12 +4001,13 @@ dependencies = [
 [[package]]
 name = "move-command-line-common"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "difference",
  "dirs-next",
  "hex",
- "move-core-types 0.0.4",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "num-bigint",
  "once_cell",
  "serde 1.0.188",
@@ -3987,6 +4035,7 @@ dependencies = [
 [[package]]
 name = "move-compiler"
 version = "0.0.1"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "bcs 0.1.4",
@@ -3994,15 +4043,15 @@ dependencies = [
  "codespan-reporting",
  "difference",
  "hex",
- "move-binary-format 0.0.3",
- "move-borrow-graph 0.0.1",
- "move-bytecode-source-map 0.1.0",
- "move-bytecode-verifier 0.1.0",
- "move-command-line-common 0.1.0",
- "move-core-types 0.0.4",
- "move-ir-to-bytecode 0.1.0",
- "move-ir-types 0.1.0",
- "move-symbol-pool 0.1.0",
+ "move-binary-format 0.0.3 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-borrow-graph 0.0.1 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-bytecode-source-map 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-bytecode-verifier 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-command-line-common 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-ir-to-bytecode 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-ir-types 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-symbol-pool 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "num-bigint",
  "once_cell",
  "petgraph 0.5.1",
@@ -4044,6 +4093,7 @@ dependencies = [
 [[package]]
 name = "move-core-types"
 version = "0.0.4"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "arbitrary",
@@ -4084,17 +4134,18 @@ dependencies = [
 [[package]]
 name = "move-coverage"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "bcs 0.1.4",
  "clap 4.4.2",
  "codespan",
  "colored",
- "move-binary-format 0.0.3",
- "move-bytecode-source-map 0.1.0",
- "move-command-line-common 0.1.0",
- "move-core-types 0.0.4",
- "move-ir-types 0.1.0",
+ "move-binary-format 0.0.3 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-bytecode-source-map 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-command-line-common 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-ir-types 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "once_cell",
  "petgraph 0.5.1",
  "serde 1.0.188",
@@ -4123,18 +4174,19 @@ dependencies = [
 [[package]]
 name = "move-disassembler"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "clap 4.4.2",
  "colored",
- "move-binary-format 0.0.3",
- "move-bytecode-source-map 0.1.0",
- "move-bytecode-verifier 0.1.0",
- "move-command-line-common 0.1.0",
- "move-compiler 0.0.1",
- "move-core-types 0.0.4",
- "move-coverage 0.1.0",
- "move-ir-types 0.1.0",
+ "move-binary-format 0.0.3 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-bytecode-source-map 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-bytecode-verifier 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-command-line-common 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-compiler 0.0.1 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-coverage 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-ir-types 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
 ]
 
 [[package]]
@@ -4158,15 +4210,16 @@ dependencies = [
 [[package]]
 name = "move-docgen"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "codespan",
  "codespan-reporting",
  "itertools 0.10.5",
  "log",
- "move-compiler 0.0.1",
- "move-core-types 0.0.4",
- "move-model 0.1.0",
+ "move-compiler 0.0.1 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-model 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "num",
  "once_cell",
  "regex",
@@ -4194,30 +4247,32 @@ dependencies = [
 [[package]]
 name = "move-errmapgen"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "bcs 0.1.4",
  "log",
- "move-command-line-common 0.1.0",
- "move-core-types 0.0.4",
- "move-model 0.1.0",
+ "move-command-line-common 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-model 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "serde 1.0.188",
 ]
 
 [[package]]
 name = "move-ir-to-bytecode"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "codespan-reporting",
  "log",
- "move-binary-format 0.0.3",
- "move-bytecode-source-map 0.1.0",
- "move-command-line-common 0.1.0",
- "move-core-types 0.0.4",
- "move-ir-to-bytecode-syntax 0.1.0",
- "move-ir-types 0.1.0",
- "move-symbol-pool 0.1.0",
+ "move-binary-format 0.0.3 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-bytecode-source-map 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-command-line-common 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-ir-to-bytecode-syntax 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-ir-types 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-symbol-pool 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "ouroboros 0.9.5",
  "thiserror",
 ]
@@ -4244,13 +4299,14 @@ dependencies = [
 [[package]]
 name = "move-ir-to-bytecode-syntax"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "hex",
- "move-command-line-common 0.1.0",
- "move-core-types 0.0.4",
- "move-ir-types 0.1.0",
- "move-symbol-pool 0.1.0",
+ "move-command-line-common 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-ir-types 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-symbol-pool 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
 ]
 
 [[package]]
@@ -4269,12 +4325,13 @@ dependencies = [
 [[package]]
 name = "move-ir-types"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "hex",
- "move-command-line-common 0.1.0",
- "move-core-types 0.0.4",
- "move-symbol-pool 0.1.0",
+ "move-command-line-common 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-symbol-pool 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "once_cell",
  "serde 1.0.188",
 ]
@@ -4296,6 +4353,7 @@ dependencies = [
 [[package]]
 name = "move-model"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "codespan",
@@ -4303,15 +4361,15 @@ dependencies = [
  "internment",
  "itertools 0.10.5",
  "log",
- "move-binary-format 0.0.3",
- "move-bytecode-source-map 0.1.0",
- "move-bytecode-verifier 0.1.0",
- "move-command-line-common 0.1.0",
- "move-compiler 0.0.1",
- "move-core-types 0.0.4",
- "move-disassembler 0.1.0",
- "move-ir-types 0.1.0",
- "move-symbol-pool 0.1.0",
+ "move-binary-format 0.0.3 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-bytecode-source-map 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-bytecode-verifier 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-command-line-common 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-compiler 0.0.1 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-disassembler 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-ir-types 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-symbol-pool 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "num",
  "once_cell",
  "regex",
@@ -4348,6 +4406,7 @@ dependencies = [
 [[package]]
 name = "move-package"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "bcs 0.1.4",
@@ -4355,16 +4414,16 @@ dependencies = [
  "colored",
  "dirs-next",
  "itertools 0.10.5",
- "move-abigen 0.1.0",
- "move-binary-format 0.0.3",
- "move-bytecode-source-map 0.1.0",
- "move-bytecode-utils 0.1.0",
- "move-command-line-common 0.1.0",
- "move-compiler 0.0.1",
- "move-core-types 0.0.4",
- "move-docgen 0.1.0",
- "move-model 0.1.0",
- "move-symbol-pool 0.1.0",
+ "move-abigen 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-binary-format 0.0.3 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-bytecode-source-map 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-bytecode-utils 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-command-line-common 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-compiler 0.0.1 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-docgen 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-model 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-symbol-pool 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "named-lock",
  "once_cell",
  "petgraph 0.5.1",
@@ -4419,6 +4478,7 @@ dependencies = [
 [[package]]
 name = "move-prover"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -4430,15 +4490,15 @@ dependencies = [
  "hex",
  "itertools 0.10.5",
  "log",
- "move-abigen 0.1.0",
- "move-binary-format 0.0.3",
- "move-command-line-common 0.1.0",
- "move-compiler 0.0.1",
- "move-core-types 0.0.4",
- "move-docgen 0.1.0",
+ "move-abigen 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-binary-format 0.0.3 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-command-line-common 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-compiler 0.0.1 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-docgen 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "move-errmapgen",
- "move-ir-types 0.1.0",
- "move-model 0.1.0",
+ "move-ir-types 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-model 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "move-prover-boogie-backend",
  "move-stackless-bytecode",
  "num",
@@ -4455,6 +4515,7 @@ dependencies = [
 [[package]]
 name = "move-prover-boogie-backend"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -4463,11 +4524,11 @@ dependencies = [
  "futures",
  "itertools 0.10.5",
  "log",
- "move-binary-format 0.0.3",
- "move-command-line-common 0.1.0",
- "move-compiler 0.0.1",
- "move-core-types 0.0.4",
- "move-model 0.1.0",
+ "move-binary-format 0.0.3 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-command-line-common 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-compiler 0.0.1 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-model 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "move-stackless-bytecode",
  "num",
  "once_cell",
@@ -4483,13 +4544,14 @@ dependencies = [
 [[package]]
 name = "move-resource-viewer"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "bcs 0.1.4",
  "hex",
- "move-binary-format 0.0.3",
- "move-bytecode-utils 0.1.0",
- "move-core-types 0.0.4",
+ "move-binary-format 0.0.3 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-bytecode-utils 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "once_cell",
  "serde 1.0.188",
 ]
@@ -4497,6 +4559,7 @@ dependencies = [
 [[package]]
 name = "move-stackless-bytecode"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "codespan",
  "codespan-reporting",
@@ -4504,14 +4567,14 @@ dependencies = [
  "im",
  "itertools 0.10.5",
  "log",
- "move-binary-format 0.0.3",
- "move-borrow-graph 0.0.1",
- "move-bytecode-verifier 0.1.0",
- "move-command-line-common 0.1.0",
- "move-compiler 0.0.1",
- "move-core-types 0.0.4",
- "move-ir-to-bytecode 0.1.0",
- "move-model 0.1.0",
+ "move-binary-format 0.0.3 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-borrow-graph 0.0.1 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-bytecode-verifier 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-command-line-common 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-compiler 0.0.1 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-ir-to-bytecode 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-model 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "num",
  "once_cell",
  "paste",
@@ -4522,6 +4585,7 @@ dependencies = [
 [[package]]
 name = "move-symbol-pool"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "once_cell",
  "serde 1.0.188",
@@ -4539,14 +4603,15 @@ dependencies = [
 [[package]]
 name = "move-table-extension"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
  "bcs 0.1.4",
  "better_any",
- "move-binary-format 0.0.3",
- "move-core-types 0.0.4",
- "move-vm-runtime 0.1.0",
- "move-vm-types 0.1.0",
+ "move-binary-format 0.0.3 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-vm-runtime 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-vm-types 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "once_cell",
  "sha3 0.9.1",
  "smallvec",
@@ -4555,13 +4620,14 @@ dependencies = [
 [[package]]
 name = "move-vm-runtime"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "better_any",
  "fail 0.4.0",
- "move-binary-format 0.0.3",
- "move-bytecode-verifier 0.1.0",
- "move-core-types 0.0.4",
- "move-vm-types 0.1.0",
+ "move-binary-format 0.0.3 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-bytecode-verifier 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-vm-types 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "once_cell",
  "parking_lot 0.11.2",
  "sha3 0.9.1",
@@ -4588,12 +4654,13 @@ dependencies = [
 [[package]]
 name = "move-vm-test-utils"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "anyhow",
- "move-binary-format 0.0.3",
- "move-core-types 0.0.4",
+ "move-binary-format 0.0.3 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "move-table-extension",
- "move-vm-types 0.1.0",
+ "move-vm-types 0.1.0 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "once_cell",
  "serde 1.0.188",
 ]
@@ -4601,10 +4668,11 @@ dependencies = [
 [[package]]
 name = "move-vm-types"
 version = "0.1.0"
+source = "git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6#3e38d0eff49e786a79045ef35c9a6944afa660dc"
 dependencies = [
  "bcs 0.1.4",
- "move-binary-format 0.0.3",
- "move-core-types 0.0.4",
+ "move-binary-format 0.0.3 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
+ "move-core-types 0.0.4 (git+https://github.com/young-rocks/aptos-core?branch=aptos-release-v1.6)",
  "once_cell",
  "serde 1.0.188",
  "smallvec",

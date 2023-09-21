@@ -161,7 +161,7 @@ impl ProofResponder {
         while let Some((query, output)) = receiver.recv().await {
             println!("prove result: {:?}", output);
             self.db
-                .put::<UserQueryProofSchema>(query.sequence_number.into(), output.into())?;
+                .put::<UserQueryProofSchema>(&query.sequence_number.into(), &output.into())?;
             // TODO: submit proof
         }
         Ok(())
