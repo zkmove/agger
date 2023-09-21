@@ -45,6 +45,6 @@ zkmove-vm-circuit = { path = "../zkmove-vm/vm-circuit", package = "vm-circuit" }
 zkmove-vm = { path = "../zkmove-vm/vm", package = "vm" }
 
 [patch."https://github.com/aptos-labs/aptos-core"]
-aptos-sdk = { path = "../aptos-core/sdk" }
-aptos-schemadb = { path = "../aptos-core/storage/schemadb" }
-aptos-move-core-types = { path = "../aptos-core/third_party/move/move-core/types", package = "move-core-types" }
+aptos-sdk = { git = "https://github.com/young-rocks/aptos-core", branch = "aptos-release-v1.6" }
+aptos-schemadb = { git = "https://github.com/young-rocks/aptos-core", branch = "aptos-release-v1.6" }
+aptos-move-core-types = { git = "https://github.com/young-rocks/aptos-core", branch = "aptos-release-v1.6", package = "move-core-types" }
