@@ -20,12 +20,13 @@ async-stream = { version = "0.3" }
 futures-util = { version = "0.3" }
 futures-core = { version = "0.3" }
 serde = { version = "1", features = ["derive"] }
-serde_json = { version = "1", features=["arbitrary_precision"] }
+serde_json = { version = "1"}
 hex = { version = "0.4" }
 bcs = { version = "0.1.5" }
 threadpool = { version = "1.8" }
 rayon = { version = "1.7" }
 clap = { version = "4", features = ["derive"] }
+rocksdb = { version = "0.21" }
 move-package = { git = "https://github.com/young-rocks/move", rev = "b036995a" }
 move-compiler = { git = "https://github.com/young-rocks/move", rev = "b036995a" }
 move-core-types = { git = "https://github.com/young-rocks/move", rev = "b036995a" }
@@ -36,16 +37,21 @@ zkmove-vm = { git = "https://github.com/young-rocks/zkmove-vm", branch = "main",
 
 halo2_proofs = { git = "https://github.com/privacy-scaling-explorations/halo2.git", tag = "v2023_02_02" }
 
-aptos-sdk = { git = "https://github.com/aptos-labs/aptos-core", tag = "aptos-node-v1.6.3" }
-aptos-schemadb = { git = "https://github.com/aptos-labs/aptos-core", tag = "aptos-node-v1.6.3" }
-aptos-move-core-types = { git = "https://github.com/aptos-labs/aptos-core", tag = "aptos-node-v1.6.3", package = "move-core-types" }
-rocksdb = { version = "0.21" }
-[patch."https://github.com/young-rocks/zkmove-vm"]
-movelang = { path = "../zkmove-vm/movelang" }
-zkmove-vm-circuit = { path = "../zkmove-vm/vm-circuit", package = "vm-circuit" }
-zkmove-vm = { path = "../zkmove-vm/vm", package = "vm" }
-
-[patch."https://github.com/aptos-labs/aptos-core"]
+#aptos-sdk = { git = "https://github.com/aptos-labs/aptos-core", tag = "aptos-node-v1.6.3" }
+#aptos-schemadb = { git = "https://github.com/aptos-labs/aptos-core", tag = "aptos-node-v1.6.3" }
+#aptos-move-core-types = { git = "https://github.com/aptos-labs/aptos-core", tag = "aptos-node-v1.6.3", package = "move-core-types" }
 aptos-sdk = { git = "https://github.com/young-rocks/aptos-core", branch = "aptos-release-v1.6" }
 aptos-schemadb = { git = "https://github.com/young-rocks/aptos-core", branch = "aptos-release-v1.6" }
 aptos-move-core-types = { git = "https://github.com/young-rocks/aptos-core", branch = "aptos-release-v1.6", package = "move-core-types" }
+
+
+
+#[patch."https://github.com/young-rocks/zkmove-vm"]
+#movelang = { path = "../zkmove-vm/movelang" }
+#zkmove-vm-circuit = { path = "../zkmove-vm/vm-circuit", package = "vm-circuit" }
+#zkmove-vm = { path = "../zkmove-vm/vm", package = "vm" }
+
+#[patch."https://github.com/aptos-labs/aptos-core"]
+#aptos-sdk = { git = "https://github.com/young-rocks/aptos-core", branch = "aptos-release-v1.6" }
+#aptos-schemadb = { git = "https://github.com/young-rocks/aptos-core", branch = "aptos-release-v1.6" }
+#aptos-move-core-types = { git = "https://github.com/young-rocks/aptos-core", branch = "aptos-release-v1.6", package = "move-core-types" }

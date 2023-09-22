@@ -9,7 +9,7 @@ edition = "2021"
 clap = { workspace = true }
 
 anyhow = { workspace = true }
-agger-node = { path = "../node" }
+
 serde = { workspace = true }
 serde_json = { workspace = true }
 hex = { workspace = true }
@@ -18,3 +18,4 @@ move-package = { workspace = true }
 move-compiler = { workspace = true }
 movelang = { workspace = true }
 move-core-types.workspace=true
+agger-node = { path = "../node" }
