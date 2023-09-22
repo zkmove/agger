@@ -1,25 +1,20 @@
+use agger_contract_types::UserQuery;
 use anyhow::anyhow;
 use halo2_proofs::halo2curves::bn256::Fr;
-
-use movelang::argument::{
-    parse_transaction_argument, parse_type_tags, Identifier, ScriptArguments,
+use move_binary_format::CompiledModule;
+use move_core_types::{
+    identifier::Identifier,
+    language_storage::ModuleId,
+    parser::{parse_transaction_argument, parse_type_tags},
 };
-
-
-use movelang::move_binary_format::CompiledModule;
-use movelang::value::ModuleId;
-use zkmove_vm::runtime::Runtime;
-use zkmove_vm::state::StateStore;
+use movelang::argument::ScriptArguments;
+use zkmove_vm::{runtime::Runtime, state::StateStore};
 use zkmove_vm_circuit::witness::Witness;
-
-use agger_contract_types::UserQuery;
-
-use crate::vk_generator::VerificationParameters;
 
 pub fn witness(
     query: UserQuery,
     modules: Vec<Vec<u8>>,
-    vp: &VerificationParameters,
+    config: Vec<u8>,
 ) -> anyhow::Result<Witness<Fr>> {
     let mut state = StateStore::new();
     let mut compiled_modules = Vec::default();
@@ -76,7 +71,7 @@ pub fn witness(
         Some((&entry_module_id, &entry_function_name)),
         compiled_modules.clone(),
         traces,
-        bcs::from_bytes(&vp.config)?,
+        bcs::from_bytes(config.as_slice())?,
     )?;
     Ok(witness)
 }

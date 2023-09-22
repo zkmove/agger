@@ -1,21 +1,18 @@
-use std::path::PathBuf;
-
-use clap::value_parser;
-use clap::{Parser, Subcommand};
+use agger_cli::circuit_config::{parse_entry_function_config, parse_from_move_toml};
+use agger_vk_generation::gen_vks;
+use clap::{value_parser, Parser, Subcommand};
 use move_compiler::compiled_unit::CompiledUnit;
-use move_core_types::account_address::AccountAddress;
-use move_core_types::language_storage::TypeTag;
-use move_core_types::parser::parse_type_tag;
-use move_core_types::transaction_argument::TransactionArgument;
-use move_package::compilation::compiled_package::OnDiskCompiledPackage;
-use move_package::compilation::package_layout::CompiledPackageLayout;
-use move_package::source_package::layout::SourcePackageLayout;
-use move_package::source_package::manifest_parser::parse_move_manifest_from_file;
+use move_core_types::{
+    account_address::AccountAddress, language_storage::TypeTag, parser::parse_type_tag,
+    transaction_argument::TransactionArgument,
+};
+use move_package::{
+    compilation::{compiled_package::OnDiskCompiledPackage, package_layout::CompiledPackageLayout},
+    source_package::{layout::SourcePackageLayout, manifest_parser::parse_move_manifest_from_file},
+};
 use movelang::argument::parse_transaction_argument;
 use serde::{Deserialize, Serialize};
-
-use agger_cli::circuit_config::{parse_entry_function_config, parse_from_move_toml};
-use agger_node::vk_generator::{gen_vks, PublishModulesConfig};
+use std::path::PathBuf;
 
 #[derive(Parser)]
 struct Cli {
@@ -132,7 +129,7 @@ fn main() -> anyhow::Result<()> {
                     .as_path(),
                 output.as_str(),
             )?;
-        }
+        },
         Commands::BuildAptosDeploymentFile(c) => {
             let project_root = reroot_path(cli.package_path).unwrap();
             let package_name = parse_move_manifest_from_file(project_root.as_path())?
@@ -154,7 +151,7 @@ fn main() -> anyhow::Result<()> {
                 CompiledUnit::Module(m) => m,
                 CompiledUnit::Script(_) => {
                     unreachable!()
-                }
+                },
             };
             let target_module_address = target_module.address.as_ref();
             let target_module_name = target_module.name.to_string();
@@ -166,10 +163,10 @@ fn main() -> anyhow::Result<()> {
                 circuit_configs,
                 &pkg.compiled_package_info.address_alias_instantiation,
             )?;
-            let vks = gen_vks(PublishModulesConfig {
-                modules: pkg.all_modules().map(|m| m.unit.serialize(None)).collect(),
-                entry_function_config: entry_function_config.into_values().collect(),
-            })?;
+            let vks = gen_vks(
+                pkg.all_modules().map(|m| m.unit.serialize(None)).collect(),
+                entry_function_config.into_values().collect(),
+            )?;
             let args = vec![
                 ArgWithTypeJSON {
                     arg_type: "hex".to_string(),
@@ -238,7 +235,7 @@ fn main() -> anyhow::Result<()> {
                     .as_path(),
                 output.as_str(),
             )?;
-        }
+        },
     }
     Ok(())
 }

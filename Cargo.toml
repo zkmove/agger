@@ -1,11 +1,17 @@
 [workspace]
 members = [
+    "crates/types",
+    "crates/contract-types",
     "crates/node",
-    "crates/aptos-events",
-    "crates/cli",
     "crates/node-rpc",
     "crates/storage",
-    "crates/contract-types"
+    "crates/aptos-events",
+    "crates/cli",
+    "crates/vk-generation",
+    "crates/query-module-resolver",
+    "crates/prove-dispatcher",
+    "crates/utils/fake-rng",
+    "crates/utils/move-helpers",
 ]
 resolver = "2"
 [workspace.dependencies]
@@ -20,7 +26,7 @@ async-stream = { version = "0.3" }
 futures-util = { version = "0.3" }
 futures-core = { version = "0.3" }
 serde = { version = "1", features = ["derive"] }
-serde_json = { version = "1"}
+serde_json = { version = "1" }
 hex = { version = "0.4" }
 bcs = { version = "0.1.5" }
 threadpool = { version = "1.8" }
@@ -30,7 +36,7 @@ rocksdb = { version = "0.21" }
 move-package = { git = "https://github.com/young-rocks/move", rev = "b036995a" }
 move-compiler = { git = "https://github.com/young-rocks/move", rev = "b036995a" }
 move-core-types = { git = "https://github.com/young-rocks/move", rev = "b036995a" }
-
+move-binary-format = { git = "https://github.com/young-rocks/move", rev = "b036995a" }
 movelang = { git = "https://github.com/young-rocks/zkmove-vm", branch = "main", package = "movelang" }
 zkmove-vm-circuit = { git = "https://github.com/young-rocks/zkmove-vm", branch = "main", package = "vm-circuit" }
 zkmove-vm = { git = "https://github.com/young-rocks/zkmove-vm", branch = "main", package = "vm" }

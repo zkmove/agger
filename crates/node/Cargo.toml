@@ -19,9 +19,11 @@ movelang.workspace = true
 zkmove-vm-circuit.workspace = true
 zkmove-vm.workspace = true
 halo2_proofs = { workspace = true }
-rand = { workspace = true }
-rand_core.workspace=true
 threadpool.workspace = true
 aptos-events = { path = "../aptos-events" }
 agger-storage = { path = "../storage" }
 agger-contract-types = { path = "../contract-types" }
+agger-types = { path = "../types" }
+agger-prove-dispatcher = { path = "../prove-dispatcher" }
+move-helpers = { path = "../utils/move-helpers" }
+query-module-resolver = { path = "../query-module-resolver" }

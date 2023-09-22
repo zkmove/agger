@@ -1,20 +1,21 @@
+use agger_contract_types::UserQuery;
 pub use aptos_schemadb as schemadb;
-use aptos_schemadb::schema::{KeyCodec, Schema, ValueCodec};
-use aptos_schemadb::{ColumnFamilyName, DB};
+use aptos_schemadb::{
+    schema::{KeyCodec, Schema, ValueCodec},
+    ColumnFamilyName,
+};
 use serde::{Deserialize, Serialize};
 
-use agger_contract_types::UserQuery;
-
-#[derive(Debug)]
-pub struct AggerStore {
-    db: DB,
-}
-
-impl AggerStore {
-    pub fn new(db: DB) -> Self {
-        Self { db }
-    }
-}
+// #[derive(Debug)]
+// pub struct AggerStore {
+//     db: DB,
+// }
+//
+// impl AggerStore {
+//     pub fn new(db: DB) -> Self {
+//         Self { db }
+//     }
+// }
 
 #[derive(Clone, Debug)]
 pub struct UserQueryKey {
@@ -44,10 +45,10 @@ impl From<UserQuery> for UserQueryValue {
 pub struct UserQuerySchema;
 
 impl Schema for UserQuerySchema {
-    const COLUMN_FAMILY_NAME: ColumnFamilyName = "queries";
     type Key = UserQueryKey;
-
     type Value = UserQueryValue;
+
+    const COLUMN_FAMILY_NAME: ColumnFamilyName = "queries";
 }
 
 impl KeyCodec<UserQuerySchema> for UserQueryKey {
@@ -103,10 +104,10 @@ impl From<anyhow::Result<Vec<u8>>> for UserQueryProvingResult {
 pub struct UserQueryProofSchema;
 
 impl Schema for UserQueryProofSchema {
-    const COLUMN_FAMILY_NAME: ColumnFamilyName = "proofs";
     type Key = UserQueryKey;
-
     type Value = UserQueryProvingResult;
+
+    const COLUMN_FAMILY_NAME: ColumnFamilyName = "proofs";
 }
 
 impl KeyCodec<UserQueryProofSchema> for UserQueryKey {

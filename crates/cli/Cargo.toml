@@ -18,4 +18,5 @@ move-package = { workspace = true }
 move-compiler = { workspace = true }
 movelang = { workspace = true }
 move-core-types.workspace=true
-agger-node = { path = "../node" }
+agger-types={path="../types"}
+agger-vk-generation = {path="../vk-generation"}

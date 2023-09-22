@@ -1,27 +1,32 @@
+use crate::witness::witness;
+use agger_contract_types::UserQuery;
 use anyhow::{ensure, Result};
-use futures_util::stream::FuturesUnordered;
-use futures_util::StreamExt;
-use halo2_proofs::halo2curves::bn256::{Bn256, Fr};
-use halo2_proofs::poly::kzg::commitment::ParamsKZG;
-use halo2_proofs::SerdeFormat;
+use fake_rng::CountingRng;
+use futures_util::{stream::FuturesUnordered, StreamExt};
+use halo2_proofs::{
+    halo2curves::bn256::{Bn256, Fr},
+    poly::kzg::commitment::ParamsKZG,
+    SerdeFormat,
+};
 use log::{error, info};
 use threadpool::ThreadPool;
-use tokio::sync::mpsc::{Receiver, Sender};
-use tokio::sync::oneshot;
-use zkmove_vm_circuit::circuit::VmCircuit;
-use zkmove_vm_circuit::witness::Witness;
-use zkmove_vm_circuit::{prove_vm_circuit_kzg, setup_vm_circuit};
+use tokio::sync::{
+    mpsc::{Receiver, Sender},
+    oneshot,
+};
+use zkmove_vm_circuit::{
+    circuit::VmCircuit, prove_vm_circuit_kzg, setup_vm_circuit, witness::Witness,
+};
 
-use agger_contract_types::UserQuery;
-
-use crate::query_runner::witness;
-use crate::vk_generator::{CountingRng, VerificationParameters};
+mod witness;
 
 #[derive(Clone, Debug)]
 pub struct ProveTask {
     pub query: UserQuery,
     pub modules: Vec<Vec<u8>>,
-    pub vp: VerificationParameters,
+    pub config: Vec<u8>,
+    pub vk: Vec<u8>,
+    pub param: Vec<u8>,
 }
 
 #[derive(Debug)]
@@ -43,6 +48,7 @@ impl ProvingTaskDispatcher {
             task_receiver,
         }
     }
+
     pub async fn run(mut self) {
         let mut fs = FuturesUnordered::new();
         loop {
@@ -51,13 +57,13 @@ impl ProvingTaskDispatcher {
                 if let Some(received_output) = fs.next().await {
                     match received_output {
                         Ok(output) => {
-                            if let Err(_) = self.output_sender.send(output).await {
+                            if let Err(_output) = self.output_sender.send(output).await {
                                 break;
                             }
-                        }
+                        },
                         Err(_) => {
                             error!("task ended without sending result");
-                        }
+                        },
                     }
                 }
             }
@@ -65,7 +71,7 @@ impl ProvingTaskDispatcher {
                 received_output = fs.next() => {
                     match received_output {
                         Some(Ok(output)) => {
-                            if let Err(_) = self.output_sender.send(output).await {
+                            if let Err(_output) = self.output_sender.send(output).await {
                                 // output receiver is gone, stop dispatching
                                 break
                             }
@@ -95,7 +101,7 @@ impl ProvingTaskDispatcher {
                 self.threadpool.execute(|| {
                     let query = task.query.clone();
                     let output = run_task(task);
-                    if let Err(_) = tx.send((query, output)) {
+                    if let Err(_v) = tx.send((query, output)) {
                         error!("task ended, but output receiver is lost");
                     }
                 });
@@ -109,43 +115,44 @@ impl ProvingTaskDispatcher {
         while let Some(received_output) = fs.next().await {
             match received_output {
                 Ok(output) => {
-                    if let Err(_) = self.output_sender.send(output).await {
+                    if let Err(_v) = self.output_sender.send(output).await {
                         break;
                     }
-                }
+                },
                 Err(_) => {
                     error!("task ended without sending result");
-                }
+                },
             }
         }
         info!("prove dispatcher is closed");
     }
 }
 
-fn run_task(ProveTask { query, modules, vp }: ProveTask) -> Result<Vec<u8>> {
-    let witness = witness(query.clone(), modules, &vp)?;
-    prove(query, witness, &vp)
+fn run_task(
+    ProveTask {
+        query,
+        modules,
+        config,
+        vk,
+        param,
+    }: ProveTask,
+) -> Result<Vec<u8>> {
+    let witness = witness(query.clone(), modules, config)?;
+    prove(witness, param, vk)
 }
 
-pub fn prove(
-    _query: UserQuery,
-    witness: Witness<Fr>,
-    verification_parameters: &VerificationParameters,
-) -> Result<Vec<u8>> {
+fn prove(witness: Witness<Fr>, param: Vec<u8>, onchain_vk: Vec<u8>) -> Result<Vec<u8>> {
     let circuit = VmCircuit { witness };
     // let params = ParamsKZG::<Bn256>::read_custom(
     //     &mut verification_parameters.param.as_slice(),
     //     SerdeFormat::Processed,
     // )?;
-    let params = ParamsKZG::<Bn256>::setup(
-        bcs::from_bytes(verification_parameters.param.as_slice())?,
-        CountingRng(42),
-    );
+    let params = ParamsKZG::<Bn256>::setup(bcs::from_bytes(param.as_slice())?, CountingRng(42));
     let (vk, pk) = setup_vm_circuit(&circuit, &params)?;
 
     // check vk is equal to vk stored onchain.
     ensure!(
-        vk.to_bytes(SerdeFormat::Processed) == verification_parameters.vk,
+        vk.to_bytes(SerdeFormat::Processed) == onchain_vk,
         "vk equality checking failure"
     );
     let proof = prove_vm_circuit_kzg(circuit, &[], &params, pk)?;

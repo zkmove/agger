@@ -1,0 +1,18 @@
+[package]
+name = "agger-vk-generation"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+bcs.workspace = true
+anyhow.workspace = true
+movelang.workspace = true
+halo2_proofs = { workspace = true }
+zkmove-vm-circuit.workspace = true
+zkmove-vm.workspace = true
+move-core-types.workspace = true
+agger-types = { path = "../types" }
+fake-rng = { path = "../utils/fake-rng" }
+move-helpers = { path = "../utils/move-helpers" }

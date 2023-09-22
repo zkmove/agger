@@ -1,23 +1,13 @@
-use anyhow::anyhow;
-use std::path::{Path, PathBuf};
-use std::sync::Arc;
-
+use agger_node::{open_db, proof_responder::ProofResponder};
+use agger_prove_dispatcher::{ProveTask, ProvingTaskDispatcher};
+use agger_storage::{UserQueryKey, UserQuerySchema, UserQueryValue};
+use aptos_events::{AggerQueries, AptosAccountAddress, AptosBaseUrl};
 use clap::Parser;
 use futures_util::{pin_mut, StreamExt, TryFutureExt, TryStreamExt};
 use log::error;
-use move_core_types::identifier::{Identifier};
-use movelang::move_binary_format::CompiledModule;
-
-use tokio::select;
-use tokio::sync::mpsc;
-use tokio::sync::mpsc::Receiver;
-
-use agger_contract_types::UserQuery;
-use agger_node::proving::{ProveTask, ProvingTaskDispatcher};
-use agger_node::vk_generator::{get_function_index_by_name, VerificationParameters};
-use agger_storage::schemadb::{Options, DB};
-use agger_storage::{UserQueryKey, UserQueryProofSchema, UserQuerySchema, UserQueryValue};
-use aptos_events::{AggerQueryManager, AggerQueryParam, AptosAccountAddress, AptosBaseUrl};
+use query_module_resolver::AggerModuleResolver;
+use std::{path::PathBuf, sync::Arc};
+use tokio::{select, sync::mpsc};
 
 #[derive(Parser, Debug)]
 enum Cli {
@@ -58,130 +48,100 @@ async fn main() -> anyhow::Result<()> {
             agger_address,
             store_path,
         }) => {
-            let store = {
-                // Set the options to create the database if it's missing
-                let mut options = Options::default();
-                options.create_if_missing(true);
-                options.create_missing_column_families(true);
-
-                agger_storage::schemadb::DB::open(
-                    store_path.as_deref().unwrap_or(Path::new(".")),
-                    "agger-db",
-                    vec!["queries", "proofs"],
-                    &options,
-                )?
-            };
-            let store = Arc::new(store);
-            let proof_responder = ProofResponder { db: store.clone() };
-
-            let prover_threads = threadpool::Builder::new()
-                .thread_name("provers".to_string())
-                .build();
-            let (task_sender, task_receiver) = mpsc::channel(32);
-            let (output_sender, output_receiver) = mpsc::channel(32);
-            let provers = ProvingTaskDispatcher::new(prover_threads, task_receiver, output_sender);
-
-            let event_manager = AggerQueryManager::new(
-                parse_aptos_url(&aptos_rpc)?,
-                AggerQueryParam {
-                    aggger_address: agger_address,
-                },
-            );
-            let new_query_event_stream = event_manager
-                .clone()
-                .get_query_stream()
-                .map_err(anyhow::Error::new)
-                .and_then(|s| {
-                    prepare_prove_data(event_manager.clone(), s.clone())
-                        .map_ok(|(ms, vk)| (s, ms, vk))
-                })
-                .fuse();
-            pin_mut!(new_query_event_stream);
-
-            let mut dispatch_task_handle = tokio::spawn(provers.run());
-            let mut output_handle = tokio::spawn(proof_responder.start(output_receiver));
-            loop {
-                select! {
-                    _output_task_result = &mut output_handle => {
-                        // when output handle is gone, then output receiver is gone.
-                        // then dispatcher will go down.
-                    }
-                    _dispatch_task_result = &mut dispatch_task_handle => {
-                        // when dispatcher is gone, then task_sender cannot send any task,
-                        // it will go down automatically.
-                    }
-                    Some(s) = new_query_event_stream.next() => {
-                        match s {
-                            Ok((query, modules, vp)) => {
-                                store.put::<UserQuerySchema>(
-                                    &UserQueryKey::from(query.sequence_number),
-                                    &UserQueryValue::from(query.clone()),
-                                )?;
-                                let task  = ProveTask {query: query.clone(), modules, vp};
-                                if let Err(_err)  = task_sender.send(task).await {
-                                    error!("prover dispatcher is down");
-                                    break;
-                                }
-
-                            }
-                            Err(e) => {
-                                error!("get query error. {:?}", e);
-                            }
-                        }
-                    }
-                    else => {
-                        // no query events anymore
-                        break;
-                    }
-                }
-            }
-
+            run_server(
+                aptos_rpc,
+                agger_address,
+                store_path.unwrap_or(PathBuf::from(".")),
+            )
+            .await?;
             println!("Agger stopped!");
-        }
+        },
     }
 
     Ok(())
 }
 
-async fn prepare_prove_data(
-    event_manager: AggerQueryManager,
-    query: UserQuery,
-) -> anyhow::Result<(Vec<Vec<u8>>, VerificationParameters)> {
-    let modules = event_manager.prepare_modules(&query).await?;
-    let function_index = {
-        // expect first module is target module
-        let target_module =
-            CompiledModule::deserialize(modules.first().ok_or(anyhow!("expect modules"))?)?;
-        let function_name = Identifier::from_utf8(query.query.function_name)?;
-        get_function_index_by_name(&target_module, function_name.as_ident_str())?
-    };
-    let (config, vk, param) = event_manager
-        .get_vk_for_query(
-            query.query.module_address.clone(),
-            query.query.module_name.clone(),
-            function_index,
-            query.version,
-        )
-        .await?;
-    let vp = VerificationParameters::new(config, vk, param);
-    Ok((modules, vp))
-}
+async fn run_server(
+    aptos_rpc: String,
+    agger_address: AptosAccountAddress,
+    store_path: PathBuf,
+) -> anyhow::Result<()> {
+    let store = Arc::new(open_db(&store_path)?);
+    let proof_responder = ProofResponder::new(store.clone());
 
-struct ProofResponder {
-    db: Arc<DB>,
-}
+    let prover_threads = threadpool::Builder::new()
+        .thread_name("provers".to_string())
+        .build();
+    let (task_sender, task_receiver) = mpsc::channel(32);
+    let (output_sender, output_receiver) = mpsc::channel(32);
 
-impl ProofResponder {
-    async fn start(
-        self,
-        mut receiver: Receiver<(UserQuery, anyhow::Result<Vec<u8>>)>,
-    ) -> anyhow::Result<()> {
-        while let Some((query, output)) = receiver.recv().await {
-            println!("prove result: {:?}", output);
-            self.db
-                .put::<UserQueryProofSchema>(&query.sequence_number.into(), &output.into())?;
-            // TODO: submit proof
+    let provers = ProvingTaskDispatcher::new(prover_threads, task_receiver, output_sender);
+
+    let query_function_resolver =
+        AggerModuleResolver::new(parse_aptos_url(&aptos_rpc)?, agger_address);
+
+    let event_manager = AggerQueries::new(parse_aptos_url(&aptos_rpc)?, agger_address);
+
+    let new_query_event_stream = event_manager
+        .clone()
+        .get_query_stream()
+        .map_err(anyhow::Error::new)
+        .and_then(|s| {
+            query_function_resolver
+                .clone()
+                .get_vk_for_entry_function(
+                    s.query.module_address.clone(),
+                    s.query.module_name.clone(),
+                    s.query.function_name.clone(),
+                    s.version,
+                )
+                .map_ok(|(m, vp)| ProveTask {
+                    query: s,
+                    modules: vec![m],
+                    config: vp.config,
+                    vk: vp.vk,
+                    param: vp.param,
+                })
+        })
+        .fuse();
+    pin_mut!(new_query_event_stream);
+
+    let mut dispatch_task_handle = tokio::spawn(provers.run());
+    let mut output_handle = tokio::spawn(proof_responder.start(output_receiver));
+    loop {
+        select! {
+            _output_task_result = &mut output_handle => {
+                // when output handle is gone, then output receiver is gone.
+                // then dispatcher will go down.
+            }
+            _dispatch_task_result = &mut dispatch_task_handle => {
+                // when dispatcher is gone, then task_sender cannot send any task,
+                // it will go down automatically.
+            }
+            Some(s) = new_query_event_stream.next() => {
+                match s {
+                    Ok(task) => {
+                        store.put::<UserQuerySchema>(
+                            &UserQueryKey::from(task.query.sequence_number),
+                            &UserQueryValue::from(task.query.clone()),
+                        )?;
+
+                        if let Err(_err)  = task_sender.send(task).await {
+                            error!("prover dispatcher is down");
+                            break;
+                        }
+
+                    }
+                    Err(e) => {
+                        error!("get query error. {:?}", e);
+                    }
+                }
+            }
+            else => {
+                // no query events anymore
+                break;
+            }
         }
-        Ok(())
     }
+    Ok(())
 }

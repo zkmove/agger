@@ -1,4 +1,4 @@
-use agger_node::vk_generator::{CircuitConfig, DemoRunConfig, EntryFunctionConfig};
+use agger_types::{CircuitConfig, DemoRunConfig, EntryFunctionConfig};
 use anyhow::Context;
 use move_package::resolution::resolution_graph::ResolvedTable;
 use movelang::argument::{parse_transaction_argument, parse_type_tags, ScriptArguments};
@@ -69,25 +69,22 @@ pub fn parse_entry_function_config(
         let address = address_alias_instantiation
             .get(&s[0].as_str().into())
             .context(format!("expect address name {} exist", s[0]))?;
-        result.insert(
-            entr_function,
-            EntryFunctionConfig {
-                entry_module_address: address.to_hex_literal(),
-                entry_module_name: s[1].to_string(),
-                entry_function: s[2].to_string(),
-                demo_run_config: DemoRunConfig { args, ty_args },
-                circuit_config: CircuitConfig {
-                    max_step_row: conf.max_step_row,
-                    stack_ops_num: conf.stack_ops_num,
-                    locals_ops_num: conf.locals_ops_num,
-                    global_ops_num: conf.global_ops_num,
-                    max_frame_index: conf.max_frame_index,
-                    max_locals_size: conf.max_locals_size,
-                    max_stack_size: conf.max_stack_size,
-                    word_size: conf.word_size,
-                },
+        result.insert(entr_function, EntryFunctionConfig {
+            entry_module_address: address.to_hex_literal(),
+            entry_module_name: s[1].to_string(),
+            entry_function: s[2].to_string(),
+            demo_run_config: DemoRunConfig { args, ty_args },
+            circuit_config: CircuitConfig {
+                max_step_row: conf.max_step_row,
+                stack_ops_num: conf.stack_ops_num,
+                locals_ops_num: conf.locals_ops_num,
+                global_ops_num: conf.global_ops_num,
+                max_frame_index: conf.max_frame_index,
+                max_locals_size: conf.max_locals_size,
+                max_stack_size: conf.max_stack_size,
+                word_size: conf.word_size,
             },
-        );
+        });
     }
     Ok(result)
 }
