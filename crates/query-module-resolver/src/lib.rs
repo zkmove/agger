@@ -1,5 +1,3 @@
-#![feature(future_join)]
-
 use agger_contract_types::{
     AGGER_REGISTRY_FUNC_NAME_GET_CONFIG, AGGER_REGISTRY_FUNC_NAME_GET_MODULE,
     AGGER_REGISTRY_FUNC_NAME_GET_PARAM, AGGER_REGISTRY_FUNC_NAME_GET_VK,
@@ -19,6 +17,7 @@ use aptos_sdk::{
 pub use aptos_sdk::{
     rest_client::AptosBaseUrl, types::account_address::AccountAddress as AptosAccountAddress,
 };
+use futures_util::try_join;
 use move_binary_format::CompiledModule;
 use move_core_types::identifier::Identifier;
 use move_helpers::access_ext::ModuleAccessExt;
@@ -172,35 +171,38 @@ impl AggerModuleResolver {
             .iter()
             .map(|req| self.client.view(req, Some(version)))
             .collect();
-        let (param, vk, config) = join!(
+        let (param, vk, config) = try_join!(
             reqs.pop().unwrap(),
             reqs.pop().unwrap(),
             reqs.pop().unwrap()
-        )
-        .await;
-        let param: HexEncodedBytes = param?
+        )?;
+
+        let param: HexEncodedBytes = param
             .into_inner()
             .pop()
             .map(serde_json::from_value)
             .transpose()?
             .expect("view get_param return value");
-        let vk: HexEncodedBytes = vk?
+        let vk: HexEncodedBytes = vk
             .into_inner()
             .pop()
             .map(serde_json::from_value)
             .transpose()?
             .expect("view get_vk return value");
-        let config: HexEncodedBytes = config?
+        let config: HexEncodedBytes = config
             .into_inner()
             .pop()
             .map(serde_json::from_value)
             .transpose()?
             .expect("view get_config return value");
-        Ok((target_module_bytes, EntryFunctionZkParameters {
-            config: config.0,
-            vk: vk.0,
-            param: param.0,
-        }))
+        Ok((
+            target_module_bytes,
+            EntryFunctionZkParameters {
+                config: config.0,
+                vk: vk.0,
+                param: param.0,
+            },
+        ))
     }
 }
 

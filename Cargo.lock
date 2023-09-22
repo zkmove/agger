@@ -5774,6 +5774,7 @@ dependencies = [
  "agger-contract-types",
  "anyhow",
  "aptos-sdk",
+ "futures-util",
  "hex",
  "move-binary-format 0.0.3 (git+https://github.com/young-rocks/move?rev=b036995a)",
  "move-core-types 0.0.4 (git+https://github.com/young-rocks/move?rev=b036995a)",
