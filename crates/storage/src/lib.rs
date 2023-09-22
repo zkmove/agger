@@ -6,17 +6,8 @@ use aptos_schemadb::{
 };
 use serde::{Deserialize, Serialize};
 
-// #[derive(Debug)]
-// pub struct AggerStore {
-//     db: DB,
-// }
-//
-// impl AggerStore {
-//     pub fn new(db: DB) -> Self {
-//         Self { db }
-//     }
-// }
-
+pub const QUERY_COLUMN_FAMILY_NAME: &str = "queries";
+pub const PROOF_COLUMN_FAMILY_NAME: &str = "proofs";
 #[derive(Clone, Debug)]
 pub struct UserQueryKey {
     sequence_number: u64,
@@ -48,7 +39,7 @@ impl Schema for UserQuerySchema {
     type Key = UserQueryKey;
     type Value = UserQueryValue;
 
-    const COLUMN_FAMILY_NAME: ColumnFamilyName = "queries";
+    const COLUMN_FAMILY_NAME: ColumnFamilyName = QUERY_COLUMN_FAMILY_NAME;
 }
 
 impl KeyCodec<UserQuerySchema> for UserQueryKey {
@@ -107,7 +98,7 @@ impl Schema for UserQueryProofSchema {
     type Key = UserQueryKey;
     type Value = UserQueryProvingResult;
 
-    const COLUMN_FAMILY_NAME: ColumnFamilyName = "proofs";
+    const COLUMN_FAMILY_NAME: ColumnFamilyName = PROOF_COLUMN_FAMILY_NAME;
 }
 
 impl KeyCodec<UserQueryProofSchema> for UserQueryKey {

@@ -1,5 +1,10 @@
-use agger_storage::schemadb::{Options, DB};
+use agger_storage::{
+    schemadb::{Options, DB},
+    PROOF_COLUMN_FAMILY_NAME, QUERY_COLUMN_FAMILY_NAME,
+};
 use std::path::Path;
+
+pub mod proof_responder;
 
 pub fn open_db(path: impl AsRef<Path>) -> anyhow::Result<DB> {
     // Set the options to create the database if it's missing
@@ -11,9 +16,7 @@ pub fn open_db(path: impl AsRef<Path>) -> anyhow::Result<DB> {
         path,
         //store_path.as_deref().unwrap_or(Path::new(".")),
         "agger-db",
-        vec!["queries", "proofs"],
+        vec![QUERY_COLUMN_FAMILY_NAME, PROOF_COLUMN_FAMILY_NAME],
         &options,
     )
 }
-
-pub mod proof_responder;
