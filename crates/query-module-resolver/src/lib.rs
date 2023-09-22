@@ -21,7 +21,6 @@ use futures_util::try_join;
 use move_binary_format::CompiledModule;
 use move_core_types::identifier::Identifier;
 use move_helpers::access_ext::ModuleAccessExt;
-use std::future::join;
 
 //type AptosResult<T> = Result<T, RestError>;
 
