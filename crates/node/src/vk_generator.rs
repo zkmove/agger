@@ -10,8 +10,7 @@ use movelang::argument::{IdentStr, Identifier, ScriptArguments};
 use movelang::move_binary_format::access::ModuleAccess;
 use movelang::move_binary_format::CompiledModule;
 use movelang::value::{ModuleId, TypeTag};
-use rand::prelude::StdRng;
-use rand::SeedableRng;
+
 use zkmove_vm::runtime::Runtime;
 use zkmove_vm::state::StateStore;
 use zkmove_vm_circuit::circuit::VmCircuit;
@@ -156,38 +155,47 @@ pub fn gen_vks(
         let vm_circuit = VmCircuit { witness };
         let k = find_best_k(&vm_circuit, vec![])?;
 
-        let params = ParamsKZG::<Bn256>::setup(k, StdRng::from_entropy());
+        // TODO: change the fake param
+        let params = ParamsKZG::<Bn256>::setup(k, CountingRng(42));
+
         let (vk, _) = setup_vm_circuit(&vm_circuit, &params)?;
 
         let mut vk = vk.to_bytes(SerdeFormat::Processed);
 
-        let entry_function_index = compiled_module
-            .function_defs()
-            .iter()
-            .enumerate()
-            .find(|(_, fd)| {
-                compiled_module.identifier_at(compiled_module.function_handle_at(fd.function).name)
-                    == entry_function_name
-            })
-            .map(|(fdi, _)| fdi)
-            .ok_or(anyhow!(
-                "expect find index of function {}",
-                entry_function_name
-            ))? as u16;
+        let entry_function_index =
+            get_function_index_by_name(&compiled_module, entry_function_name)?;
         extend_vk_with_func_info(&mut vk, entry_function_index);
-        let params = {
-            let mut serialzied_param = Vec::new();
-            params.write_custom(&mut serialzied_param, SerdeFormat::Processed)?;
-            serialzied_param
-        };
+        // let params = {
+        //     let mut serialzied_param = Vec::new();
+        //     params.write_custom(&mut serialzied_param, SerdeFormat::Processed)?;
+        //     serialzied_param
+        // };
 
         vks.push(VerificationParameters {
             config: bcs::to_bytes(&circuit_config)?, // TODO: change to a more common serialization lib.
             vk,
-            param: params,
+            param: bcs::to_bytes(&k)?,
         });
     }
     Ok(vks)
+}
+
+pub fn get_function_index_by_name(
+    compiled_module: &CompiledModule,
+    name: &IdentStr,
+) -> anyhow::Result<u16> {
+    let entry_function_index = compiled_module
+        .function_defs()
+        .iter()
+        .enumerate()
+        .find(|(_, fd)| {
+            compiled_module.identifier_at(compiled_module.function_handle_at(fd.function).name)
+                == name
+        })
+        .map(|(fdi, _)| fdi)
+        .ok_or(anyhow!("expect find index of function {}", name))?
+        as u16;
+    Ok(entry_function_index)
 }
 
 fn extend_vk_with_func_info(
@@ -196,4 +204,27 @@ fn extend_vk_with_func_info(
     entry_function_index: u16,
 ) {
     vk.append(&mut entry_function_index.to_le_bytes().to_vec());
+}
+
+/// a fake rng
+pub struct CountingRng(pub u64);
+
+impl rand::RngCore for CountingRng {
+    fn next_u32(&mut self) -> u32 {
+        self.next_u64() as u32
+    }
+
+    fn next_u64(&mut self) -> u64 {
+        self.0 += 1;
+        self.0
+    }
+
+    fn fill_bytes(&mut self, dest: &mut [u8]) {
+        rand_core::impls::fill_bytes_via_next(self, dest)
+    }
+
+    fn try_fill_bytes(&mut self, dest: &mut [u8]) -> Result<(), rand::Error> {
+        self.fill_bytes(dest);
+        Ok(())
+    }
 }

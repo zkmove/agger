@@ -9,7 +9,7 @@ module agger::query {
     struct Query has store {
         module_address: vector<u8>,
         module_name: vector<u8>,
-        function_index: u16,
+        function_name: vector<u8>,
         // arg encoded in str, see parse_transaction_arguments
         args: vector<vector<u8>>,
         // move type in str, see parse_type_tag
@@ -52,7 +52,7 @@ module agger::query {
         sender: signer,
         module_address: vector<u8>,
         module_name: vector<u8>,
-        function_index: u16,
+        function_name: vector<u8>,
         args: vector<vector<u8>>,
         ty_args: vector<vector<u8>>,
         deadline: u64
@@ -66,7 +66,7 @@ module agger::query {
         };
         let queries = borrow_global_mut<Queries>(sender_address);
         let id = add_query(queries, Query {
-            module_address, module_name, function_index, args, ty_args, deadline,
+            module_address, module_name, function_name, args, ty_args, deadline,
             success: option::none(),
             result: option::none()
         });

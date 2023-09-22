@@ -1,5 +1,5 @@
 use anyhow::{ensure, Result};
-use futures_util::stream::{FuturesUnordered};
+use futures_util::stream::FuturesUnordered;
 use futures_util::StreamExt;
 use halo2_proofs::halo2curves::bn256::{Bn256, Fr};
 use halo2_proofs::poly::kzg::commitment::ParamsKZG;
@@ -15,7 +15,7 @@ use zkmove_vm_circuit::{prove_vm_circuit_kzg, setup_vm_circuit};
 use agger_contract_types::UserQuery;
 
 use crate::query_runner::witness;
-use crate::vk_generator::VerificationParameters;
+use crate::vk_generator::{CountingRng, VerificationParameters};
 
 #[derive(Clone, Debug)]
 pub struct ProveTask {
@@ -133,10 +133,14 @@ pub fn prove(
     verification_parameters: &VerificationParameters,
 ) -> Result<Vec<u8>> {
     let circuit = VmCircuit { witness };
-    let params = ParamsKZG::<Bn256>::read_custom(
-        &mut verification_parameters.param.as_slice(),
-        SerdeFormat::Processed,
-    )?;
+    // let params = ParamsKZG::<Bn256>::read_custom(
+    //     &mut verification_parameters.param.as_slice(),
+    //     SerdeFormat::Processed,
+    // )?;
+    let params = ParamsKZG::<Bn256>::setup(
+        bcs::from_bytes(verification_parameters.param.as_slice())?,
+        CountingRng(42),
+    );
     let (vk, pk) = setup_vm_circuit(&circuit, &params)?;
 
     // check vk is equal to vk stored onchain.

@@ -1,16 +1,17 @@
-use std::time::Duration;
-
+use aptos_sdk::bcs;
 use aptos_sdk::move_types::identifier::Identifier;
 use aptos_sdk::rest_client::aptos_api_types::{
-    EntryFunctionId, IdentifierWrapper, MoveModuleId, VersionedEvent, ViewRequest,
+    EntryFunctionId, HexEncodedBytes, IdentifierWrapper, MoveModuleId, VersionedEvent, ViewRequest,
 };
 use aptos_sdk::rest_client::error::RestError;
 pub use aptos_sdk::rest_client::AptosBaseUrl;
 use aptos_sdk::rest_client::Client;
 pub use aptos_sdk::types::account_address::AccountAddress as AptosAccountAddress;
-use async_stream::{stream};
+use aptos_sdk::types::contract_event::{ContractEvent, ContractEventV0, EventWithVersion};
+use async_stream::stream;
 use futures_core::Stream;
-
+use log::info;
+use std::time::Duration;
 use tokio::time::sleep;
 
 use agger_contract_types::*;
@@ -43,89 +44,106 @@ impl AggerQueryManager {
             function: EntryFunctionId {
                 module: MoveModuleId {
                     address: self.param.aggger_address.into(),
-                    name: IdentifierWrapper(Identifier::new(AGGER_QUERY_MODULE_NAME).unwrap()),
+                    name: IdentifierWrapper(Identifier::new(AGGER_REGISTRY_MODULE_NAME).unwrap()),
                 },
-                name: IdentifierWrapper(Identifier::new(AGGER_QUERY_FUNC_NAME_GET_MODULE).unwrap()),
+                name: IdentifierWrapper(
+                    Identifier::new(AGGER_REGISTRY_FUNC_NAME_GET_MODULE).unwrap(),
+                ),
             },
             type_arguments: vec![],
             arguments: vec![
-                serde_json::to_value(query.module_address.clone()).unwrap(),
-                serde_json::to_value(query.module_name.clone()).unwrap(),
+                HexEncodedBytes(query.module_address.clone())
+                    .json()
+                    .unwrap(),
+                HexEncodedBytes(query.module_name.clone()).json().unwrap(),
             ],
         };
+
         let response = self
             .client
             .view(&req, Some(*version))
             .await?
             .into_inner()
             .pop();
-        let module_bytes: Vec<_> = response
+        let module_bytes: HexEncodedBytes = response
             .map(serde_json::from_value)
             .transpose()?
             .expect("view get_module should return one value");
         // TODO: fetch deps if any
-        Ok(vec![module_bytes])
+        Ok(vec![module_bytes.0])
     }
 
     ///return (config, vk,param) for a user query
     pub async fn get_vk_for_query(
         &self,
-        UserQuery { query, version, .. }: &UserQuery,
+        module_address: Vec<u8>,
+        module_name: Vec<u8>,
+        function_index: u16,
+        version: u64,
+        //UserQuery { query, .. }: &UserQuery,
     ) -> AptosResult<(Vec<u8>, Vec<u8>, Vec<u8>)> {
         let reqs = vec![
             ViewRequest {
                 function: EntryFunctionId {
                     module: MoveModuleId {
                         address: self.param.aggger_address.into(),
-                        name: IdentifierWrapper(Identifier::new(AGGER_QUERY_MODULE_NAME).unwrap()),
+                        name: IdentifierWrapper(
+                            Identifier::new(AGGER_REGISTRY_MODULE_NAME).unwrap(),
+                        ),
                     },
                     name: IdentifierWrapper(
-                        Identifier::new(AGGER_QUERY_FUNC_NAME_GET_CONFIG).unwrap(),
+                        Identifier::new(AGGER_REGISTRY_FUNC_NAME_GET_CONFIG).unwrap(),
                     ),
                 },
                 type_arguments: vec![],
                 arguments: vec![
-                    serde_json::to_value(query.module_address.clone()).unwrap(),
-                    serde_json::to_value(query.module_name.clone()).unwrap(),
-                    serde_json::to_value(query.function_index).unwrap(),
+                    HexEncodedBytes(module_address.clone()).json().unwrap(),
+                    HexEncodedBytes(module_name.clone()).json().unwrap(),
+                    serde_json::to_value(function_index).unwrap(),
                 ],
             },
             ViewRequest {
                 function: EntryFunctionId {
                     module: MoveModuleId {
                         address: self.param.aggger_address.into(),
-                        name: IdentifierWrapper(Identifier::new(AGGER_QUERY_MODULE_NAME).unwrap()),
+                        name: IdentifierWrapper(
+                            Identifier::new(AGGER_REGISTRY_MODULE_NAME).unwrap(),
+                        ),
                     },
-                    name: IdentifierWrapper(Identifier::new(AGGER_QUERY_FUNC_NAME_GET_VK).unwrap()),
+                    name: IdentifierWrapper(
+                        Identifier::new(AGGER_REGISTRY_FUNC_NAME_GET_VK).unwrap(),
+                    ),
                 },
                 type_arguments: vec![],
                 arguments: vec![
-                    serde_json::to_value(query.module_address.clone()).unwrap(),
-                    serde_json::to_value(query.module_name.clone()).unwrap(),
-                    serde_json::to_value(query.function_index).unwrap(),
+                    HexEncodedBytes(module_address.clone()).json().unwrap(),
+                    HexEncodedBytes(module_name.clone()).json().unwrap(),
+                    serde_json::to_value(function_index).unwrap(),
                 ],
             },
             ViewRequest {
                 function: EntryFunctionId {
                     module: MoveModuleId {
                         address: self.param.aggger_address.into(),
-                        name: IdentifierWrapper(Identifier::new(AGGER_QUERY_MODULE_NAME).unwrap()),
+                        name: IdentifierWrapper(
+                            Identifier::new(AGGER_REGISTRY_MODULE_NAME).unwrap(),
+                        ),
                     },
                     name: IdentifierWrapper(
-                        Identifier::new(AGGER_QUERY_FUNC_NAME_GET_PARAM).unwrap(),
+                        Identifier::new(AGGER_REGISTRY_FUNC_NAME_GET_PARAM).unwrap(),
                     ),
                 },
                 type_arguments: vec![],
                 arguments: vec![
-                    serde_json::to_value(query.module_address.clone()).unwrap(),
-                    serde_json::to_value(query.module_name.clone()).unwrap(),
-                    serde_json::to_value(query.function_index).unwrap(),
+                    HexEncodedBytes(module_address.clone()).json().unwrap(),
+                    HexEncodedBytes(module_name.clone()).json().unwrap(),
+                    serde_json::to_value(function_index).unwrap(),
                 ],
             },
         ];
         let mut reqs: Vec<_> = reqs
             .iter()
-            .map(|req| self.client.view(req, Some(*version)))
+            .map(|req| self.client.view(req, Some(version)))
             .collect();
 
         let (param, vk, config) = tokio::try_join!(
@@ -133,26 +151,26 @@ impl AggerQueryManager {
             reqs.pop().unwrap(),
             reqs.pop().unwrap()
         )?;
-        let param: Vec<u8> = param
+        let param: HexEncodedBytes = param
             .into_inner()
             .pop()
             .map(serde_json::from_value)
             .transpose()?
             .expect("view get_param return value");
-        let vk: Vec<u8> = vk
+        let vk: HexEncodedBytes = vk
             .into_inner()
             .pop()
             .map(serde_json::from_value)
             .transpose()?
             .expect("view get_vk return value");
-        let config: Vec<u8> = config
+        let config: HexEncodedBytes = config
             .into_inner()
             .pop()
             .map(serde_json::from_value)
             .transpose()?
             .expect("view get_config return value");
 
-        Ok((config, vk, param))
+        Ok((config.0, vk.0, param.0))
     }
 
     pub fn get_query_stream(self) -> impl Stream<Item = AptosResult<UserQuery>> {
@@ -181,21 +199,32 @@ impl AggerQueryManager {
             }
         }
     }
-    async fn handle_new_query_event(&self, event: VersionedEvent) -> AptosResult<UserQuery> {
-        let new_query_event: NewQueryEvent = serde_json::from_value(event.data)?;
-        let version = event.version.0;
+    async fn handle_new_query_event(
+        &self,
+        EventWithVersion {
+            transaction_version,
+            event: ContractEvent::V0(event),
+        }: EventWithVersion,
+    ) -> AptosResult<UserQuery> {
+        info!(
+            "new query event, key: {}, {}/{}",
+            &event.key(),
+            &event.type_tag(),
+            event.sequence_number()
+        );
+        let new_query_event: NewQueryEvent = bcs::from_bytes(event.event_data())?;
         let response = self
             .client
             .get_account_resource_at_version_bcs(
                 new_query_event.user,
                 format!(
-                    "{:#x}::{}::{}",
+                    "{:#x}::{}::{}", // {:#x} to format using hex with '0x' prefix
                     self.param.aggger_address,
                     AGGER_QUERY_MODULE_NAME,
                     AGGER_QUERY_QUERIES_STRUCT_NAME
                 )
                 .as_str(),
-                version,
+                transaction_version,
             )
             .await?;
         let queries: Queries = response.into_inner();
@@ -212,22 +241,22 @@ impl AggerQueryManager {
                     AGGER_QUERY_QUERY_STRUCT_NAME
                 )
                 .as_str(),
-                new_query_event.id,
-                version,
+                new_query_event.id.to_string(), // to_string is needed, because aptos represent u64/u128 as string.
+                transaction_version,
             )
             .await?;
         Ok(UserQuery {
-            version,
-            sequence_number: event.sequence_number.0,
+            version: transaction_version,
+            sequence_number: event.sequence_number(),
             id: new_query_event.id,
             user: new_query_event.user,
             query: query.into_inner(),
         })
     }
-    async fn get_event(&self, at: u64) -> AptosResult<Option<VersionedEvent>> {
+    async fn get_event(&self, at: u64) -> AptosResult<Option<EventWithVersion>> {
         let response = self
             .client
-            .get_account_events(
+            .get_account_events_bcs(
                 self.param.aggger_address,
                 format!(
                     "{:#x}::{}::{}",

@@ -1,6 +1,6 @@
 pub use aptos_schemadb as schemadb;
 use aptos_schemadb::schema::{KeyCodec, Schema, ValueCodec};
-use aptos_schemadb::{define_schema, ColumnFamilyName, DB};
+use aptos_schemadb::{ColumnFamilyName, DB};
 use serde::{Deserialize, Serialize};
 
 use agger_contract_types::UserQuery;

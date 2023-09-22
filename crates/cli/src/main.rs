@@ -3,10 +3,15 @@ use std::path::PathBuf;
 use clap::value_parser;
 use clap::{Parser, Subcommand};
 use move_compiler::compiled_unit::CompiledUnit;
+use move_core_types::account_address::AccountAddress;
+use move_core_types::language_storage::TypeTag;
+use move_core_types::parser::parse_type_tag;
+use move_core_types::transaction_argument::TransactionArgument;
 use move_package::compilation::compiled_package::OnDiskCompiledPackage;
 use move_package::compilation::package_layout::CompiledPackageLayout;
 use move_package::source_package::layout::SourcePackageLayout;
 use move_package::source_package::manifest_parser::parse_move_manifest_from_file;
+use movelang::argument::parse_transaction_argument;
 use serde::{Deserialize, Serialize};
 
 use agger_cli::circuit_config::{parse_entry_function_config, parse_from_move_toml};
@@ -23,6 +28,7 @@ struct Cli {
 #[derive(Subcommand)]
 enum Commands {
     BuildAptosDeploymentFile(BuildAptosDeployment),
+    BuildQuery(BuildQuery),
 }
 
 #[derive(Parser)]
@@ -33,10 +39,100 @@ struct BuildAptosDeployment {
     agger_address: String,
 }
 
+#[derive(Parser)]
+struct BuildQuery {
+    #[arg(long)]
+    function_id: String,
+    #[arg(long)]
+    args: Vec<String>,
+    #[arg(long)]
+    type_args: Vec<String>,
+    #[arg(long = "agger")]
+    agger_address: String,
+}
+
 fn main() -> anyhow::Result<()> {
     let cli: Cli = Cli::parse();
 
     match cli.command {
+        Commands::BuildQuery(BuildQuery {
+            function_id,
+            args,
+            type_args,
+            agger_address,
+        }) => {
+            // check args and type_args are well formed
+            let _ = args
+                .iter()
+                .map(|a| parse_transaction_argument(a.as_str()))
+                .collect::<anyhow::Result<Vec<TransactionArgument>>>()?;
+            let _ = type_args
+                .iter()
+                .map(|a| parse_type_tag(a.as_str()))
+                .collect::<anyhow::Result<Vec<TypeTag>>>()?;
+            let function_id: Vec<_> = function_id
+                .splitn(3, "::")
+                .map(ToString::to_string)
+                .collect();
+            let module_address = AccountAddress::from_hex_literal(&function_id[0])?.to_vec();
+            let module_name = function_id[1].to_string();
+            let function_name = function_id[2].to_string();
+
+            let aptos_args = vec![
+                ArgWithTypeJSON {
+                    arg_type: "hex".to_string(),
+                    value: serde_json::Value::String(format!("0x{}", hex::encode(module_address))),
+                },
+                ArgWithTypeJSON {
+                    arg_type: "string".to_string(),
+                    value: serde_json::Value::String(module_name.clone()),
+                },
+                ArgWithTypeJSON {
+                    arg_type: "string".to_string(),
+                    value: serde_json::Value::String(function_name.clone()),
+                },
+                ArgWithTypeJSON {
+                    arg_type: "string".to_string(),
+                    value: serde_json::Value::Array(
+                        args.into_iter().map(serde_json::Value::String).collect(),
+                    ),
+                },
+                ArgWithTypeJSON {
+                    arg_type: "string".to_string(),
+                    value: serde_json::Value::Array(
+                        type_args
+                            .into_iter()
+                            .map(serde_json::Value::String)
+                            .collect(),
+                    ),
+                },
+                ArgWithTypeJSON {
+                    arg_type: "u64".to_string(),
+                    value: serde_json::Value::Number(100.into()),
+                },
+            ];
+            let json = EntryFunctionArgumentsJSON {
+                function_id: format!("{}::query::send_query", agger_address.as_str()),
+                type_args: vec![],
+                args: aptos_args,
+            };
+
+            let output = serde_json::to_string_pretty(&json)?;
+            println!("{}", output);
+            let project_root = reroot_path(cli.package_path).unwrap();
+            let aptos_query_dir = project_root
+                .join("queries")
+                .join("aptos")
+                .join(module_name.as_str());
+            std::fs::create_dir_all(aptos_query_dir.as_path())?;
+            std::fs::write(
+                aptos_query_dir
+                    .join(function_name.as_str())
+                    .with_extension("json")
+                    .as_path(),
+                output.as_str(),
+            )?;
+        }
         Commands::BuildAptosDeploymentFile(c) => {
             let project_root = reroot_path(cli.package_path).unwrap();
             let package_name = parse_move_manifest_from_file(project_root.as_path())?

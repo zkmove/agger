@@ -1,16 +1,20 @@
+use anyhow::anyhow;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 use clap::Parser;
 use futures_util::{pin_mut, StreamExt, TryFutureExt, TryStreamExt};
 use log::error;
+use move_core_types::identifier::{Identifier};
+use movelang::move_binary_format::CompiledModule;
+
 use tokio::select;
 use tokio::sync::mpsc;
 use tokio::sync::mpsc::Receiver;
 
 use agger_contract_types::UserQuery;
 use agger_node::proving::{ProveTask, ProvingTaskDispatcher};
-use agger_node::vk_generator::VerificationParameters;
+use agger_node::vk_generator::{get_function_index_by_name, VerificationParameters};
 use agger_storage::schemadb::{Options, DB};
 use agger_storage::{UserQueryKey, UserQueryProofSchema, UserQuerySchema, UserQueryValue};
 use aptos_events::{AggerQueryManager, AggerQueryParam, AptosAccountAddress, AptosBaseUrl};
@@ -144,7 +148,21 @@ async fn prepare_prove_data(
     query: UserQuery,
 ) -> anyhow::Result<(Vec<Vec<u8>>, VerificationParameters)> {
     let modules = event_manager.prepare_modules(&query).await?;
-    let (config, vk, param) = event_manager.get_vk_for_query(&query).await?;
+    let function_index = {
+        // expect first module is target module
+        let target_module =
+            CompiledModule::deserialize(modules.first().ok_or(anyhow!("expect modules"))?)?;
+        let function_name = Identifier::from_utf8(query.query.function_name)?;
+        get_function_index_by_name(&target_module, function_name.as_ident_str())?
+    };
+    let (config, vk, param) = event_manager
+        .get_vk_for_query(
+            query.query.module_address.clone(),
+            query.query.module_name.clone(),
+            function_index,
+            query.version,
+        )
+        .await?;
     let vp = VerificationParameters::new(config, vk, param);
     Ok((modules, vp))
 }
