@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 
 pub const QUERY_COLUMN_FAMILY_NAME: &str = "queries";
 pub const PROOF_COLUMN_FAMILY_NAME: &str = "proofs";
+
 #[derive(Clone, Debug)]
 pub struct UserQueryKey {
     sequence_number: u64,

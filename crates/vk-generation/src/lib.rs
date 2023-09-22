@@ -6,13 +6,14 @@ use halo2_proofs::{
     poly::kzg::commitment::ParamsKZG,
     SerdeFormat,
 };
-use move_core_types::{account_address::AccountAddress, resolver::ModuleResolver};
-use move_helpers::access_ext::ModuleAccessExt;
-use movelang::{
-    argument::{IdentStr, Identifier},
-    move_binary_format::{CompiledModule},
-    value::ModuleId,
+use move_binary_format::CompiledModule;
+use move_core_types::{
+    account_address::AccountAddress,
+    identifier::{IdentStr, Identifier},
+    language_storage::ModuleId,
+    resolver::ModuleResolver,
 };
+use move_helpers::access_ext::ModuleAccessExt;
 use std::str::FromStr;
 use zkmove_vm::{runtime::Runtime, state::StateStore};
 use zkmove_vm_circuit::{circuit::VmCircuit, find_best_k, setup_vm_circuit};

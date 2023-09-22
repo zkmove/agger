@@ -91,24 +91,17 @@ dependencies = [
  "agger-contract-types",
  "agger-prove-dispatcher",
  "agger-storage",
- "agger-types",
  "anyhow",
  "aptos-events",
- "async-stream",
  "bcs 0.1.5",
  "clap 4.4.2",
  "env_logger",
  "futures-util",
- "halo2_proofs",
  "log",
- "move-core-types 0.0.4 (git+https://github.com/young-rocks/move?rev=b036995a)",
  "move-helpers",
- "movelang",
  "query-module-resolver",
  "threadpool",
  "tokio",
- "vm",
- "vm-circuit",
 ]
 
 [[package]]
@@ -163,9 +156,9 @@ dependencies = [
  "bcs 0.1.5",
  "fake-rng",
  "halo2_proofs",
+ "move-binary-format 0.0.3 (git+https://github.com/young-rocks/move?rev=b036995a)",
  "move-core-types 0.0.4 (git+https://github.com/young-rocks/move?rev=b036995a)",
  "move-helpers",
- "movelang",
  "vm",
  "vm-circuit",
 ]
@@ -483,8 +476,6 @@ dependencies = [
  "async-stream",
  "futures-core",
  "log",
- "serde 1.0.188",
- "serde_json",
  "tokio",
 ]
 
@@ -5783,15 +5774,11 @@ dependencies = [
  "agger-contract-types",
  "anyhow",
  "aptos-sdk",
- "async-stream",
- "futures-core",
  "hex",
- "log",
  "move-binary-format 0.0.3 (git+https://github.com/young-rocks/move?rev=b036995a)",
  "move-core-types 0.0.4 (git+https://github.com/young-rocks/move?rev=b036995a)",
  "move-helpers",
  "serde_json",
- "tokio",
 ]
 
 [[package]]

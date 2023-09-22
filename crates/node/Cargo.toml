@@ -11,19 +11,12 @@ env_logger.workspace = true
 bcs = { workspace = true }
 anyhow = { workspace = true }
 tokio = { workspace = true }
-async-stream = { workspace = true }
 futures-util.workspace = true
 clap = { workspace = true }
-move-core-types = { workspace = true }
-movelang.workspace = true
-zkmove-vm-circuit.workspace = true
-zkmove-vm.workspace = true
-halo2_proofs = { workspace = true }
 threadpool.workspace = true
 aptos-events = { path = "../aptos-events" }
 agger-storage = { path = "../storage" }
 agger-contract-types = { path = "../contract-types" }
-agger-types = { path = "../types" }
 agger-prove-dispatcher = { path = "../prove-dispatcher" }
 move-helpers = { path = "../utils/move-helpers" }
 query-module-resolver = { path = "../query-module-resolver" }

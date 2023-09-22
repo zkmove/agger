@@ -1,3 +1,5 @@
+#![feature(future_join)]
+
 use agger_contract_types::{
     AGGER_REGISTRY_FUNC_NAME_GET_CONFIG, AGGER_REGISTRY_FUNC_NAME_GET_MODULE,
     AGGER_REGISTRY_FUNC_NAME_GET_PARAM, AGGER_REGISTRY_FUNC_NAME_GET_VK,
@@ -20,6 +22,7 @@ pub use aptos_sdk::{
 use move_binary_format::CompiledModule;
 use move_core_types::identifier::Identifier;
 use move_helpers::access_ext::ModuleAccessExt;
+use std::future::join;
 
 //type AptosResult<T> = Result<T, RestError>;
 
@@ -164,29 +167,30 @@ impl AggerModuleResolver {
                 ],
             },
         ];
+
         let mut reqs: Vec<_> = reqs
             .iter()
             .map(|req| self.client.view(req, Some(version)))
             .collect();
-
-        let (param, vk, config) = tokio::try_join!(
+        let (param, vk, config) = join!(
             reqs.pop().unwrap(),
             reqs.pop().unwrap(),
             reqs.pop().unwrap()
-        )?;
-        let param: HexEncodedBytes = param
+        )
+        .await;
+        let param: HexEncodedBytes = param?
             .into_inner()
             .pop()
             .map(serde_json::from_value)
             .transpose()?
             .expect("view get_param return value");
-        let vk: HexEncodedBytes = vk
+        let vk: HexEncodedBytes = vk?
             .into_inner()
             .pop()
             .map(serde_json::from_value)
             .transpose()?
             .expect("view get_vk return value");
-        let config: HexEncodedBytes = config
+        let config: HexEncodedBytes = config?
             .into_inner()
             .pop()
             .map(serde_json::from_value)
