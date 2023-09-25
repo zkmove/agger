@@ -106,70 +106,53 @@ impl AggerModuleResolver {
                 ))?;
             function_def.function.0
         };
-        let reqs = vec![
-            ViewRequest {
-                function: EntryFunctionId {
-                    module: MoveModuleId {
-                        address: self.agger_address.into(),
-                        name: IdentifierWrapper(
-                            AptosIdentifier::new(AGGER_REGISTRY_MODULE_NAME).unwrap(),
-                        ),
-                    },
-                    name: IdentifierWrapper(
-                        AptosIdentifier::new(AGGER_REGISTRY_FUNC_NAME_GET_CONFIG).unwrap(),
-                    ),
-                },
-                type_arguments: vec![],
-                arguments: vec![
+        let reqs: Vec<_> = vec![
+            (
+                AGGER_REGISTRY_FUNC_NAME_GET_CONFIG,
+                vec![
                     HexEncodedBytes(module_address.clone()).json().unwrap(),
                     HexEncodedBytes(module_name.clone()).json().unwrap(),
                     serde_json::to_value(function_index).unwrap(),
                 ],
-            },
-            ViewRequest {
-                function: EntryFunctionId {
-                    module: MoveModuleId {
-                        address: self.agger_address.into(),
-                        name: IdentifierWrapper(
-                            AptosIdentifier::new(AGGER_REGISTRY_MODULE_NAME).unwrap(),
-                        ),
-                    },
-                    name: IdentifierWrapper(
-                        AptosIdentifier::new(AGGER_REGISTRY_FUNC_NAME_GET_VK).unwrap(),
-                    ),
-                },
-                type_arguments: vec![],
-                arguments: vec![
+            ),
+            (
+                AGGER_REGISTRY_FUNC_NAME_GET_VK,
+                vec![
                     HexEncodedBytes(module_address.clone()).json().unwrap(),
                     HexEncodedBytes(module_name.clone()).json().unwrap(),
                     serde_json::to_value(function_index).unwrap(),
                 ],
-            },
-            ViewRequest {
-                function: EntryFunctionId {
-                    module: MoveModuleId {
-                        address: self.agger_address.into(),
-                        name: IdentifierWrapper(
-                            AptosIdentifier::new(AGGER_REGISTRY_MODULE_NAME).unwrap(),
-                        ),
-                    },
-                    name: IdentifierWrapper(
-                        AptosIdentifier::new(AGGER_REGISTRY_FUNC_NAME_GET_PARAM).unwrap(),
-                    ),
-                },
-                type_arguments: vec![],
-                arguments: vec![
+            ),
+            (
+                AGGER_REGISTRY_FUNC_NAME_GET_PARAM,
+                vec![
                     HexEncodedBytes(module_address.clone()).json().unwrap(),
                     HexEncodedBytes(module_name.clone()).json().unwrap(),
                     serde_json::to_value(function_index).unwrap(),
                 ],
+            ),
+        ]
+        .into_iter()
+        .map(|(func_name, args)| ViewRequest {
+            function: EntryFunctionId {
+                module: MoveModuleId {
+                    address: self.agger_address.into(),
+                    name: IdentifierWrapper(
+                        AptosIdentifier::new(AGGER_REGISTRY_MODULE_NAME).unwrap(),
+                    ),
+                },
+                name: IdentifierWrapper(AptosIdentifier::new(func_name).unwrap()),
             },
-        ];
+            type_arguments: vec![],
+            arguments: args,
+        })
+        .collect();
 
         let mut reqs: Vec<_> = reqs
             .iter()
-            .map(|req| self.client.view(req, Some(version)))
+            .map(|req| self.client.view(&req, Some(version)))
             .collect();
+
         let (param, vk, config) = try_join!(
             reqs.pop().unwrap(),
             reqs.pop().unwrap(),
