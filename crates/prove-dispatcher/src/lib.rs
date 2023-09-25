@@ -137,7 +137,7 @@ fn run_task(
         param,
     }: ProveTask,
 ) -> Result<Vec<u8>> {
-    let witness = witness(query.clone(), modules, config)?;
+    let witness = witness(query, modules, config)?;
     prove(witness, param, vk)
 }
 

@@ -1,16 +1,16 @@
 use agger_contract_types::UserQuery;
-use agger_storage::{schemadb::DB, UserQueryProofSchema};
+use agger_storage::{AggerStore, UserQueryProofSchema};
 use anyhow::Result;
 use std::sync::Arc;
 use tokio::sync::mpsc::Receiver;
 
 /// Responder read proof from store or from message bus, and send it to chain.
 pub struct ProofResponder {
-    db: Arc<DB>,
+    db: Arc<AggerStore>,
 }
 
 impl ProofResponder {
-    pub fn new(db: Arc<DB>) -> Self {
+    pub fn new(db: Arc<AggerStore>) -> Self {
         Self { db }
     }
 

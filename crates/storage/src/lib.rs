@@ -2,9 +2,43 @@ use agger_contract_types::UserQuery;
 pub use aptos_schemadb as schemadb;
 use aptos_schemadb::{
     schema::{KeyCodec, Schema, ValueCodec},
-    ColumnFamilyName,
+    ColumnFamilyName, ReadOptions, DB,
 };
 use serde::{Deserialize, Serialize};
+use std::ops::Deref;
+
+#[derive(Debug)]
+pub struct AggerStore {
+    db: DB,
+}
+
+impl Deref for AggerStore {
+    type Target = DB;
+
+    fn deref(&self) -> &Self::Target {
+        &self.db
+    }
+}
+
+impl AggerStore {
+    pub fn new(db: DB) -> Self {
+        Self { db }
+    }
+    pub fn last_proved_event_number(&self) -> anyhow::Result<Option<u64>> {
+        let mut iters = self
+            .db
+            .iter::<UserQueryProofSchema>(ReadOptions::default())?;
+        iters.seek_to_last();
+        let value = iters.next().transpose()?.map(|(k, _)| k.sequence_number);
+        Ok(value)
+    }
+    pub fn last_seen_event(&self) -> anyhow::Result<Option<UserQuery>> {
+        let mut iters = self.db.iter::<UserQuerySchema>(ReadOptions::default())?;
+        iters.seek_to_last();
+        let value = iters.next().transpose()?.map(|(_k, v)| v.query);
+        Ok(value)
+    }
+}
 
 pub const QUERY_COLUMN_FAMILY_NAME: &str = "queries";
 pub const PROOF_COLUMN_FAMILY_NAME: &str = "proofs";

@@ -1,6 +1,6 @@
 use agger_node::{open_db, proof_responder::ProofResponder};
 use agger_prove_dispatcher::{ProveTask, ProvingTaskDispatcher};
-use agger_storage::{UserQueryKey, UserQuerySchema, UserQueryValue};
+use agger_storage::{AggerStore, UserQueryKey, UserQuerySchema, UserQueryValue};
 use aptos_events::{AggerQueries, AptosAccountAddress, AptosBaseUrl};
 use clap::Parser;
 use futures_util::{pin_mut, StreamExt, TryFutureExt, TryStreamExt};
@@ -66,7 +66,8 @@ async fn run_server(
     agger_address: AptosAccountAddress,
     store_path: PathBuf,
 ) -> anyhow::Result<()> {
-    let store = Arc::new(open_db(&store_path)?);
+    let store = open_db(&store_path)?;
+    let store = Arc::new(AggerStore::new(store));
     let proof_responder = ProofResponder::new(store.clone());
 
     let prover_threads = threadpool::Builder::new()
@@ -82,9 +83,14 @@ async fn run_server(
 
     let event_manager = AggerQueries::new(parse_aptos_url(&aptos_rpc)?, agger_address);
 
+    //skip proved event
+    let query_event_from = store
+        .last_proved_event_number()?
+        .map(|x| x + 1)
+        .unwrap_or(0);
     let new_query_event_stream = event_manager
         .clone()
-        .get_query_stream()
+        .get_query_stream(query_event_from)
         .map_err(anyhow::Error::new)
         .and_then(|s| {
             query_function_resolver

@@ -29,9 +29,9 @@ impl AggerQueries {
         }
     }
 
-    pub fn get_query_stream(self) -> impl Stream<Item = AptosResult<UserQuery>> {
+    pub fn get_query_stream(self, start: u64) -> impl Stream<Item = AptosResult<UserQuery>> {
         stream! {
-            let mut cur = 0;
+            let mut cur = start;
             loop {
                 let event = self.get_event(cur).await;
                 match event {

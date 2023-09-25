@@ -150,7 +150,7 @@ impl AggerModuleResolver {
 
         let mut reqs: Vec<_> = reqs
             .iter()
-            .map(|req| self.client.view(&req, Some(version)))
+            .map(|req| self.client.view(req, Some(version)))
             .collect();
 
         let (param, vk, config) = try_join!(

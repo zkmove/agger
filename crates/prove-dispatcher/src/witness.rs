@@ -48,7 +48,7 @@ pub fn witness(
     let entry_module_address =
         move_core_types::account_address::AccountAddress::from_bytes(&query.query.module_address)?;
     let entry_module_name = Identifier::from_utf8(query.query.module_name.clone())?;
-    let entry_function_name = Identifier::from_utf8(query.query.function_name.clone())?;
+    let entry_function_name = Identifier::from_utf8(query.query.function_name)?;
     let entry_module_id = ModuleId::new(entry_module_address, entry_module_name);
     let traces = rt
         .execute_entry_function(
@@ -59,7 +59,7 @@ pub fn witness(
             if args.is_empty() {
                 None
             } else {
-                Some(ScriptArguments::new(args.clone()))
+                Some(ScriptArguments::new(args))
             },
             &mut state,
         )
